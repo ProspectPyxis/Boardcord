@@ -119,4 +119,7 @@ dist
 
 # Template ends here
 
+.eslintrc.js
+
 config/global_config.js
+config/guildsettings.sqlite*

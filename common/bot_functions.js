@@ -2,14 +2,14 @@ module.exports = (bot) => {
 
     bot.loadCommand = (commandName) => {
         try {
-            client.logger.log(`Loading Command: ${commandName}`);
+            bot.logger.log('info', `Loading Command: ${commandName.slice(0, -3)}`);
             const props = require(`../commands/${commandName}`);
             if (props.init) {
-                props.init(client);
+                props.init(bot);
             }
-            client.commands.set(props.help.name, props);
+            bot.commands.set(props.help.name, props);
             props.conf.aliases.forEach(alias => {
-                client.aliases.set(alias, props.help.name);
+                bot.aliases.set(alias, props.help.name);
             });
             return false;
         } catch (e) {

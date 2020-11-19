@@ -11,15 +11,12 @@ Once you have done so, follow these instructions:
 1. Clone this repository to a channel of your choice.
 2. In a terminal, open the folder, and run `npm init`.
 3. Once you have done so, the following packages should be installed:
- * `discord.js`
- * `enmap`
+ * `discord.js` (obviously)
+ * `enmap` and `better-sqlite-pool`
+ * `winston` and `logform`
 4. In the `config` folder, edit `global_config_example.js` (see below) to your liking (most importantly, adding your own bot token), then rename the file to `global_config.js`.
 
 After that, you should be ready to run the bot! Just run the command `node index.js` (or `node .` if you want to be fancy) and the bot should be up and running.
 
 ## Configuration
-All global configurations are stored in a simple `.js` file with a module export. It should be well commented enough that edits are easily done to the desired values.
-
-Per-server configuration (such as server-specific prefixes, game defaults, etc.) are all configured in-bot and stored in `*.sqlite` files using, well, SQLite. This probably shouldn't be human-edited.
-
-All configuration files are stored in `./config` and its subfolders.
+-- WIP --

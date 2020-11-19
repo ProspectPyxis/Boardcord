@@ -12,13 +12,23 @@
   },
   "keywords": [],
   "author": "",
-  "license": "GNU GPL v3",
+  "license": "GPL-3.0",
   "bugs": {
     "url": "https://github.com/ProspectPyxis/Boardcord/issues"
   },
   "homepage": "https://github.com/ProspectPyxis/Boardcord#readme",
   "dependencies": {
+    "better-sqlite-pool": "^0.3.0",
+    "better-sqlite3": "^7.1.1",
     "discord.js": "^12.4.1",
-    "enmap": "^5.8.2"
+    "enmap": "^5.8.2",
+    "logform": "^2.2.0",
+    "node-gyp": "^7.1.2",
+    "winston": "^3.3.3"
+  },
+  "devDependencies": {
+    "babel-eslint": "^10.1.0",
+    "eslint": "^7.13.0",
+    "eslint-plugin-jsdoc": "^30.7.8"
   }
 }
