@@ -1,37 +1,45 @@
 /* eslint-disable no-unused-vars */
 class Game {
 
-    static gameData = {
-        name: "Game",
-        aliases: [],
-        minPlayers: 1,
-        maxPlayers: 1,
-        customRules: false,
-        defaultOptions: {}
+    /**
+     * This should be overridden in proper games by calling super.gameData and editing it,
+     * rather than rewriting gameData entirely for every game.
+     *
+     * @returns {object} - The data for this game.
+     */
+    static get gameData() {
+        return {
+            name: "Game",
+            aliases: [],
+            minPlayers: 1,
+            maxPlayers: 1,
+            turnOrder: false,
+            defaultOptions: {}
+        }
     }
 
     /**
      * @class
+     * @param {string} id - The UUID of this game.
      * @param {Discord.Client} bot - The bot instance.
-     * @param {Discord.Message} triggermsg - The message used to create the game instance.
+     * @param {Discord.Channel} channel - The channel the game is running in.
+     * @param {Discord.User[]} players - The players involved in the game, sorted by turn order (if applicable).
+     * @param {object} options - The options to be used by this game.
+     * @param {object} [other] - Other properties for the game excluded from options.
      */
-    constructor(bot, triggermsg) {
+    constructor(id, bot, channel, players, options, other) {
 
+        this.id = id;
         this.bot = bot;
-        this.msg = triggermsg;
+        this.channel = channel;
+        // If the game has turn orders, then GameSetup should pass this.turnOrder to players, NOT this.players
+        this.players = players;
+        this.options = options;
 
-        this.players = [triggermsg.author];
-        this.gm = triggermsg.author;
+        this.guild = channel.guild;
 
-        // this.id = UUID.v4();
-        this.setup = true;
-        this.options = this.constructor.gameData.defaultOptions;
-
-        this.setupmsg;
-        this.gamestring;
         this.gamemsg;
-        this.log;
-        this.logmsg;
+        this.log = [];
 
     }
 
@@ -45,6 +53,13 @@ class Game {
     async gameLoop() {}
 
     /**
+     * @returns {string} - The representation of the game board.
+     */
+    getBoard() {
+        return '';
+    }
+
+    /**
      * This should be called upon receiving a message from a player.
      *
      * @param {Discord.Message} message - The message to be processed.
@@ -54,10 +69,9 @@ class Game {
 
     /**
      * This function should cleanly end the game.
-     * If this class is overridden then super should be called at the end as this contains some minor garbage collection code.
+     * This should NOT be overridden - any code to run after a game finishes should be in finishGame(), and make sure to run gameEnd() at the end of that function.
      */
-    gameEnd() {
-    }
+    gameEnd() {}
 
 }
 

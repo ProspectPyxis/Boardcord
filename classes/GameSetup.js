@@ -25,6 +25,8 @@ class GameSetup {
 
         this.id = nanoid();
         this.options = game.gameData.defaultOptions;
+        this.turnOrder = game.gameData.turnOrder === 1 ? [triggermsg.author] : null;
+        this.randomTurns = false;
 
         this.setupmsg = this.channel.send(this.getSetupMessage());
         this.timer = setTimeout(() => {
@@ -41,15 +43,25 @@ class GameSetup {
         let str = "";
 
         str += "**Setting up game:** " + this.name + "\n" + "**Host:** " + this.gm.username + "\n--------------------\n";
+
         str += "**Players:**\n";
-        for (const i of this.players) {
-            str += i.toString() + " ";
-        }
-        if (this.game.gameData.customRules) {
-            // TODO: Refactor this for later games with custom rulesets
+        str += this.players.join(" ");
+
+        if (this.turnOrder) {
+            str += "\n\n**Current turn order:**\n";
+            if (this.randomTurns) str += "*Randomized!*";
+            else str += this.turnOrder.join(", ");
         }
 
-        str += `\n\nOnce you are ready, run the command \`${this.bot.getPrefix(this.guild)}setupgame start\` to start the game.\nTo cancel this setup, run the command \`${this.bot.getPrefix(this.guild)}setupgame cancel\`.\nSetup times out automatically 120 seconds after the last command.`
+        if (Object.keys(this.options).length !== 0 || this.options.constructor !== Object) {
+            // TODO: Refactor this for later games with custom rulesetss
+        } else {
+            str += "\n\nThis game has no custom rules available."
+        }
+
+        str += `\n\n*Once you are ready, run the command \`${this.bot.getPrefix(this.guild)}setupgame start\` to start the game.*`;
+        str += `\n*To cancel this setup, run the command \`${this.bot.getPrefix(this.guild)}setupgame cancel\`.*`;
+        str += `\n*Setup times out automatically 120 seconds after the last command.*`
 
         return str;
     }
@@ -60,27 +72,28 @@ class GameSetup {
         switch (cmd) {
             case 'invite':
                 if (this.players.length === this.game.gameData.maxPlayers) {
-                    this.msg.channel.send(`You've already hit the player limit for this game! (Player limit: ${this.game.gameData.maxPlayers})`);
+                    this.channel.send(`You've already hit the player limit for this game! (Player limit: ${this.game.gameData.maxPlayers})`);
                     break;
                 }
                 if (this.players.length + msg.mentions.members.size > this.constructor.gameData.maxPlayers) {
-                    this.msg.channel.send(`You've invited too many players! (Player limit: ${this.constructor.gameData.maxPlayers})\nPlease invite less players.`);
+                    this.channel.send(`You've invited too many players! (Player limit: ${this.constructor.gameData.maxPlayers})\nPlease invite less players.`);
                     break;
                 }
 
                 for (const i of msg.mentions.members.entries()) {
                     this.inviteUser(i[1].user);
                 }
-                this.msg.channel.send('Users have been invited! The relevant user(s) must type "accept" to join the game within 30 seconds.');
+                this.channel.send('Users have been invited! The relevant user(s) must type "accept" to join the game within 30 seconds.');
                 break;
+
             case 'option':
             case 'set':
-                if (!this.game.gameData.customRules) {
-                    this.msg.channel.send("No custom options are available for this game!");
+                if (Object.keys(this.game.gameData.defaultOptions).length === 0 && this.game.gameData.defaultOptions === Object) {
+                    this.channel.send("No custom options are available for this game!");
                     break;
                 }
                 if (!(args[0] in this.options)) {
-                    this.msg.channel.send(`The game option \`${args[0]} was not found for this game!`);
+                    this.channel.send(`The game option \`${args[0]} was not found for this game!`);
                     break;
                 }
 
@@ -103,17 +116,54 @@ class GameSetup {
                 }
                 this.setupmsg.edit(this.getSetupMessage());
                 break;
+
+            case 'turnorder':
+            case 'turns':
+                if (!this.game.gameData.turnOrder) {
+                    this.channel.send("This game does not have turn orders!");
+                    break;
+                }
+
+                if (args[0] == "random") {
+                    this.randomTurns = !this.randomTurns;
+                    this.channel.send(`Random Turn Order has been toggled to: \`${this.randomTurns}\`.`);
+                }
+                else if (this.randomTurns) {
+                    this.channel.send("Random turn order is currently on - please turn it off to enable manual turn setting.");
+                }
+                else if (msg.mentions.members.size === 0) {
+                    this.channel.send("You have not mentioned any player to change the position of!");
+                }
+                else if (!this.turnOrder.find(element => element.id === user.id)) {
+                    this.channel.send("The user could not be found in the players list! Have you invited them yet?");
+                }
+                else {
+                    // OPTIMIZE: There's probably a more efficient/cleaner way to do this?
+                    var pos = parseInt(args[0]);
+                    if (!pos || pos-1 < 0 || pos-1 > this.players.length) {
+                        this.channel.send(`Position ${args[0]} is undefined! Did you order your arguments correctly?`);
+                        break;
+                    }
+
+                    var user = msg.mentions.members.first().user;
+                    var temp = this.turnOrder.filter(element => element.id !== user.id);
+                    temp.splice(pos - 1, 0, user); // Using pos - 1 here because arrays start at 0 and not 1
+                    this.turnOrder = temp;
+                }
+                break;
+
             case 'start':
                 clearTimeout(this.timer);
                 this.channel.send("If this works right the game should start now!")
                 this.abort();
                 // this.bot.activeGames[this.guild.id][this.channel.id] = new this.game();
-                break;
+                return;
+
             case 'cancel':
                 clearTimeout(this.timer);
                 this.channel.send(`Setup for game "${this.game.gameData.name}" has been aborted.`);
                 this.abort();
-                break;
+                return;
         }
 
         clearTimeout(this.timer);
