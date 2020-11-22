@@ -152,11 +152,14 @@ class GameSetup {
                 }
                 break;
 
+            case 'resend':
+                this.setupmsg.delete();
+                this.setupmsg = this.channel.send(this.getSetupMessage);
+                break;
+
             case 'start':
                 clearTimeout(this.timer);
-                this.channel.send("If this works right the game should start now!")
-                this.abort();
-                // this.bot.activeGames[this.guild.id][this.channel.id] = new this.game();
+                this.bot.activeGames[this.guild.id][this.channel.id] = new this.game(this.id, this.bot, this.turnOrder ? this.turnOrder : this.players, this.options);
                 return;
 
             case 'cancel':
