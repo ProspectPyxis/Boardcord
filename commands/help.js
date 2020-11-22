@@ -12,7 +12,15 @@ exports.run = async (bot, message, args) => { // eslint-disable-line no-unused-v
         let command = args[0];
         if (bot.commands.has(command)) {
             command = bot.commands.get(command);
-            message.channel.send(`# ${command.help.name} # \n${command.help.description}\n* Usage: ${command.help.usage}\n* Aliases: ${command.conf.aliases.length === 0 ? "[None]" : command.conf.aliases.join(", ")}`, { code: "markdown" });
+            let str = "";
+
+            str += "# " + command.help.name + " # \n";
+            str += command.help.description + "\n";
+            str += "- Usage: " + command.help.usage + "\n";
+            str += "- Aliases: " + command.conf.aliases.length === 0 ? "[None]" : command.conf.aliases.join(", ") + "\n";
+            if (command.help.examples && command.help.examples.length > 0)
+                str += "- Examples: \n-- " + command.help.examples.join("\n-- ");
+            message.channel.send(str, { code: "markdown" });
         }
     }
 };
