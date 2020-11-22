@@ -72,7 +72,7 @@ const init = async () => {
         const gameName = file.split(".")[0];
         bot.logger.log('info', `Loading Game: ${gameName}`);
         const g = require(`./classes/games/${file}`);
-        if (!(g instanceof Game)) return bot.logger.log('error', `Unable to load game ${g}: Not an instance of Game`)
+        if (!(g instanceof Game)) return bot.logger.log('error', `Unable to load game ${gameName}: Not an instance of Game`)
         bot.games.push(g);
     });
 
