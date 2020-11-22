@@ -21,9 +21,16 @@ bot.commands = new Enmap();
 bot.aliases = new Enmap();
 bot.games = [];
 
+/*
+There's probably a better way to do this, but enmaps can't store classes
+so I'm just using an object to store active games with some additional GC code (see ./common/bot_functions.js)
+I'm not sure if the GC code is necessary but better safe than memory leak down the line
+*/
+bot.activeGames = {};
+
 // Setup logger
 bot.logger = winston.createLogger({
-    level: "info",
+    level: "debug",
     format: format.combine(
         format(info => {
             info.level = info.level.toUpperCase()

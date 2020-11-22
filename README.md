@@ -10,10 +10,11 @@ If you want to host the bot yourself, then you'll first need to install node.js.
 Once you have done so, follow these instructions:
 1. Clone this repository to a channel of your choice.
 2. In a terminal, open the folder, and run `npm init`.
-3. Once you have done so, the following packages should be installed:
+3. Once you have done so, the following dependencies should be installed:
  * `discord.js` (obviously)
  * `enmap` and `better-sqlite-pool`
  * `winston` and `logform`
+ * `nanoid`
 4. In the `config` folder, edit `global_config_example.js` (see below) to your liking (most importantly, adding your own bot token), then rename the file to `global_config.js`.
 
 After that, you should be ready to run the bot! Just run the command `node index.js` (or `node .` if you want to be fancy) and the bot should be up and running.

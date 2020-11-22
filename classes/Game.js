@@ -1,15 +1,37 @@
 /* eslint-disable no-unused-vars */
-
 class Game {
+
+    static gameData = {
+        name: "Game",
+        aliases: [],
+        minPlayers: 1,
+        maxPlayers: 1,
+        customRules: false,
+        defaultOptions: {}
+    }
 
     /**
      * @class
-     * @param {Discord.Message} message - The message used to create the game instance.
-     * @param {object} options - The options for the game.
+     * @param {Discord.Client} bot - The bot instance.
+     * @param {Discord.Message} triggermsg - The message used to create the game instance.
      */
-    constructor(message, options) {
+    constructor(bot, triggermsg) {
 
-        this.options = options;
+        this.bot = bot;
+        this.msg = triggermsg;
+
+        this.players = [triggermsg.author];
+        this.gm = triggermsg.author;
+
+        // this.id = UUID.v4();
+        this.setup = true;
+        this.options = this.constructor.gameData.defaultOptions;
+
+        this.setupmsg;
+        this.gamestring;
+        this.gamemsg;
+        this.log;
+        this.logmsg;
 
     }
 
@@ -20,7 +42,7 @@ class Game {
      * @async
      * @abstract
      */
-    async gameLoop() { }
+    async gameLoop() {}
 
     /**
      * This should be called upon receiving a message from a player.
@@ -28,19 +50,13 @@ class Game {
      * @param {Discord.Message} message - The message to be processed.
      * @abstract
      */
-    onMessage(message) { }
+    onMessage(message) {}
 
     /**
-     * @static
-     * @returns {object} - The basic data for this game, such as the name.
+     * This function should cleanly end the game.
+     * If this class is overridden then super should be called at the end as this contains some minor garbage collection code.
      */
-    static get gameData() {
-        return {
-            name: "Game",
-            aliases: [],
-            minPlayers: 1,
-            maxPlayers: 1
-        };
+    gameEnd() {
     }
 
 }

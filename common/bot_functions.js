@@ -17,4 +17,18 @@ module.exports = (bot) => {
         }
     };
 
+    bot.getConfig = (server) => { // eslint-disable-line no-unused-vars
+        return bot.config;
+    }
+
+    /**
+     * This is just a convenience function to shorten bot.getConfig(server).prefix
+     *
+     * @param {Discord.Guild} server - the guild to pull data from.
+     * @returns {string} - The prefix for the server.
+     */
+    bot.getPrefix = (server) => {
+        return bot.getConfig(server).prefix;
+    }
+
 }
