@@ -28,12 +28,16 @@ class GameSetup {
         this.turnOrder = game.gameData.turnOrder === 1 ? [triggermsg.author] : null;
         this.randomTurns = false;
 
-        this.setupmsg = this.channel.send(this.getSetupMessage());
+        this.init();
+
+    }
+
+    async init() {
+        this.setupmsg = await this.channel.send(this.getSetupMessage());
         this.timer = setTimeout(() => {
             this.channel.send(`Setup for game "${this.game.gameData.name}" has timed out.`);
             this.abort();
         }, 120000);
-
     }
 
     /**
@@ -42,7 +46,7 @@ class GameSetup {
     getSetupMessage() {
         let str = "";
 
-        str += "**Setting up game:** " + this.name + "\n" + "**Host:** " + this.gm.username + "\n--------------------\n";
+        str += "**Setting up game:** " + this.name + "\n" + "**Host:** " + this.gm.tag + "\n--------------------\n";
 
         str += "**Players:**\n";
         str += this.players.join(" ");
@@ -66,7 +70,7 @@ class GameSetup {
         return str;
     }
 
-    interpretCommand(msg, args) {
+    async interpretCommand(msg, args) {
         let cmd = args.shift();
 
         switch (cmd) {
@@ -154,7 +158,7 @@ class GameSetup {
 
             case 'resend':
                 this.setupmsg.delete();
-                this.setupmsg = this.channel.send(this.getSetupMessage);
+                this.setupmsg = await this.channel.send(this.getSetupMessage());
                 break;
 
             case 'start':
