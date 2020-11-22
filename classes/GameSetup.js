@@ -11,6 +11,7 @@ class GameSetup {
      */
     constructor(bot, triggermsg, game) {
 
+        this.bot = bot;
         this.msg = triggermsg;
         this.game = game;
 
@@ -42,7 +43,7 @@ class GameSetup {
         str += "**Setting up game:** " + this.name + "\n" + "**Host:** " + this.gm.username + "\n--------------------\n";
         str += "**Players:**\n";
         for (const i of this.players) {
-            str += i + " ";
+            str += i.toString() + " ";
         }
         if (this.game.gameData.customRules) {
             // TODO: Refactor this for later games with custom rulesets
@@ -100,6 +101,7 @@ class GameSetup {
                     default:
                         throw new Error('Error setting game option: unidentified variable');
                 }
+                this.setupmsg.edit(this.getSetupMessage());
                 break;
             case 'start':
                 clearTimeout(this.timer);
@@ -114,7 +116,11 @@ class GameSetup {
                 break;
         }
 
-        this.setupmsg.edit(this.getSetupMessage());
+        clearTimeout(this.timer);
+        this.timer = setTimeout(() => {
+            this.channel.send(`Setup for game "${this.game.gameData.name}" has timed out.`);
+            this.abort();
+        }, 120000);
     }
 
     /**
@@ -129,7 +135,7 @@ class GameSetup {
             .then((collected) => {
                 this.msg.channel.send(`${user} Invite accepted!`);
                 this.players.push(user);
-                this.setupmsg.edit(this.getSetupMessage);
+                this.setupmsg.edit(this.getSetupMessage());
             })
             .catch(() => {
                 this.msg.channel.send(`Invite for user **${user.tag}** has timed out.`);
@@ -143,3 +149,5 @@ class GameSetup {
     }
 
 }
+
+module.exports = GameSetup;
