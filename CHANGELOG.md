@@ -6,6 +6,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleased]
 ### Added
 - Basic commands: `ping`, `help`, `credits`
-- Common core classes like Game, GameSetup
+- Common core classes like `Game`, `GameSetup`
 - Command, events, and games loading
 - `setupgame` command skeleton
