@@ -90,6 +90,16 @@ class Game {
     }
 
     /**
+     * @param {string} msg - The message to add to the game log.
+     */
+    async addLog(msg) {
+        this.log.push(msg);
+        await this.logmsg.edit(this.getLog());
+    }
+
+    /**
+     * This method should contain initial variable setups and anything to add to the game log at the start, if needed
+     *
      * @abstract
      */
     startGame() { }
@@ -103,13 +113,12 @@ class Game {
      */
     async gameLoop() {}
 
-    /**
-     * This should be called upon receiving a message from a player.
-     *
-     * @param {Discord.Message} message - The message to be processed.
-     * @abstract
-     */
-    onMessage(message) { }
+    async resend() {
+        await this.gamemsg.delete();
+        await this.logmsg.delete();
+        this.gamemsg = await this.channel.send(this.getGameMessage());
+        this.logmsg = await this.channel.send (this.getLog());
+    }
 
     /**
      * @abstract
