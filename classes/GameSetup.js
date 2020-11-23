@@ -166,13 +166,14 @@ class GameSetup {
                 if (this.players.length < this.game.gameData.minPlayers) {
                     this.channel.send(`This game does not have enough players to start yet! ${this.players.length - this.game.gameData.minPlayers} more player(s) needed.`);
                     break;
-                } 
+                }
                 clearTimeout(this.timer);
                 this.bot.activeGames[this.guild.id][this.channel.id] = new this.game(
                     this.id,
                     this.bot,
                     this.turnOrder ? (this.randomTurns && shuffle(this.turnOrder)) || this.turnOrder : this.players,
                     this.options);
+                    this.bot.activeGames[this.guild.id][this.channel.id].init();
                 return;
 
             case 'cancel':
