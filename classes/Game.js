@@ -121,6 +121,8 @@ class Game {
     }
 
     /**
+     * At the minimum this function should run gameEnd() at the end
+     *
      * @abstract
      */
     finishGame() { }

@@ -1,7 +1,191 @@
 const Game = require('../Game.js');
+const rotate90 = require('2d-array-rotation').rotate90;
 
 class TicTacToe extends Game {
-    
+
+    // TODO: Refactor this to allow for easily expanding with variants like multi-move, more players, etc.
+
+    /**
+     * @override
+     */
+    static get gameData() {
+        let dat = super.gameData;
+        dat.name = "Tic-tac-toe";
+        dat.aliases = ["tictactoe", "Tic tac toe", "Xs and Os", "Noughts and Crosses"];
+        dat.minPlayers = 2;
+        dat.maxPlayers = 2;
+        dat.turnOrder = true;
+
+        return dat;
+    }
+
+    /** @inheritdoc */
+    constructor(id, bot, channel, players, options, other) {
+        super(id, bot, channel, players, options, other);
+
+        this.currentPlayer = 0;
+        // Board must have consistent amounts of rows and columns
+        this.board = [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0]
+        ];
+
+        // Board size is bound to 26 for now because weird stuff happens with input otherwise
+        // TODO: Add handler for board sizes bigger than 26
+        this.boardSize = Math.min(this.board.length * this.board[0].length, 26)
+
+        // Each marker is an array with element 0 being the emoji representation and element 1 being the text representation
+        this.markers = [
+            [":x:", "X"],
+            [":o:", "O"]
+        ];
+
+        this.winner;
+    }
+
+    getGameMessage() {
+        let str = "";
+        str += `**Now playing:** ${this.constructor.gameData.game}\n\n`;
+        str += "**Board:**\n"
+        str += this.getBoard();
+
+        str += `\n\n**Players:**\n${this.players[0].username} - :x:\n${this.players[1].username} - :o:`;
+
+        if (!this.winner) {
+            str += `\n\nIt is currently **${this.players[this.currentPlayer].username}**'s turn.'`;
+            str += "\nType the letter you wish to put your marker in!";
+        } else {
+            str += "\n\n**The game is over!**"
+            if (this.winner === "draw") str += "\nThe game ended in a **draw.**";
+            else str += `\nThe winner is: **${this.winner}!**`
+        }
+
+        return str;
+    }
+
+    /**
+     * @override
+     */
+    getBoard() {
+        let str = "> ";
+        let pos = 0;
+        for (let i = 0; i < this.board.length; i++) {
+            for (let j = 0; j < this.board[i].length; j++) {
+                if (this.board[i][j] - 1 >= 0 && this.board[i][j] - 1 < this.markers.length) {
+                    str += this.markers[this.board[i][j] - 1][0];
+                } else {
+                    str += `:regional_indicator_${String.fromCharCode(97 + pos)}:`;
+                }
+                str += " ";
+                pos++;
+            }
+            str += "\n> ";
+        }
+
+        return str;
+    }
+
+    /**
+     * @override
+     */
+    async gameLoop() {
+        // await this.addLog(`It is now [${this.players[this.currentPlayer].username}]'s turn.`);
+        var timer = setTimeout(
+            () => this.channel.send(`${this.players[this.currentPlayer]} Please make your move within 15 seconds or your turn will be skipped!`),
+            45000
+        )
+        try {
+            var collector = await this.channel.awaitMessages(response => {
+                response.author.id === this.players[this.currentPlayer].id &&
+                    response.content.length === 1 &&
+                    response.content.toLowerCase().charCodeAt() >= 97 &&
+                    response.content.toLowerCase().charCodeAt() - 97 < this.boardSize
+            }, {
+                max: 1,
+                time: 60000,
+                errors: ['time']
+            })
+        } catch (e) {
+            await this.channel.send(`Player **${this.players[this.currentPlayer].username}** has timed out - skipping to next player.`);
+            await this.addLog(`[${this.players[this.currentPlayer].username}] timed out - skipping turn.`);
+            this.currentPlayer = (this.currentPlayer + 1) % this.players.length;
+            await this.gamemsg.edit(this.getGameMessage());
+            this.gameLoop();
+            return;
+        }
+        clearTimeout(timer);
+
+        var pos = collector.first().content.toLowerCase().charCodeAt() - 97;
+        var ypos = Math.floor(pos / this.board.length);
+        var xpos = pos - ypos;
+
+        if (this.board[ypos][xpos] === 0) {
+            collector.first().delete();
+            this.board[ypos][xpos] = this.currentPlayer;
+            await this.addLog(`[${this.players[this.currentPlayer].username}] placed marker [${this.markers[this.currentPlayer][1]}] at position [${String.fromCharCode(pos + 97)}].`);
+            this.winner = this.checkWinner();
+            if (this.winner) {
+                this.finishGame();
+                return;
+            }
+            this.currentPlayer = (this.currentPlayer + 1) % this.players.length;
+            await this.gamemsg.edit(this.getGameMessage());
+        } else {
+            let err = await this.channel.send("That position is already taken - please try again.");
+            err.delete({ timeout: 3000 });
+        }
+        this.gameLoop();
+    }
+
+    /**
+     * @override
+     */
+    async finishGame() {
+        if (this.winner === "draw") {
+            await this.addLog("No more moves available! The game ended in a draw.");
+            await this.channel.send("**Game over!** This game ended in a **draw.**");
+        } else {
+            await this.addLog(`Game over! The winner is: [${this.winner}]!`);
+            await this.channel.send(`**Game over!** The winner is: **${this.winner}!**`);
+        }
+        await this.gamemsg.edit(this.getGameMessage());
+        this.gameEnd();
+    }
+
+    checkWinner() {
+        for (let i of this.board) {
+            if (i.every(v => v !== 0 && v === i[0])) {
+                return this.players[i[0]];
+            }
+        }
+        for (let i of rotate90(this.board)) {
+            if (i.every(v => v !== 0 && v === i[0])) {
+                return this.players[i[0]];
+            }
+        }
+        // Diagonals checking only works for symmetrical boards
+        if (this.board.length === this.board[0].length) {
+            diagonals1: {
+                for (let i = 0; i < this.board.length; i++) {
+                    if (this.board[i][i] === 0 || this.board[i][i] !== this.board[0][0]) break diagonals1;
+                }
+                return this.players[this.board[0][0]];
+            }
+            diagonals2: {
+                for (let i = 0; i < this.board.length; i++) {
+                    if (this.board[i][this.board.length - 1 - i] === 0 || this.board[i][this.board.length - 1 - i] !== this.board[0][0]) break diagonals2;
+                }
+                return this.players[this.board[0][this.board.length - 1]];
+            }
+        }
+
+        if (!(this.board.some(element => element.some(e => e === 0)))) {
+            return "draw";
+        }
+
+        return null;
+    }
 }
 
 module.exports = TicTacToe;

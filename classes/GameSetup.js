@@ -26,7 +26,7 @@ class GameSetup {
 
         this.id = nanoid();
         this.options = game.gameData.defaultOptions;
-        this.turnOrder = game.gameData.turnOrder === 1 ? [triggermsg.author] : null;
+        this.turnOrder = game.gameData.turnOrder ? [triggermsg.author] : null;
         this.randomTurns = false;
 
         this.init();
@@ -64,8 +64,8 @@ class GameSetup {
             str += "\n\nThis game has no custom rules available."
         }
 
-        str += `\n\n*Once you are ready, run the command \`${this.bot.getPrefix(this.guild)}setupgame start\` to start the game.*`;
-        str += `\n*To cancel this setup, run the command \`${this.bot.getPrefix(this.guild)}setupgame cancel\`.*`;
+        str += `\n\n*Once you are ready, run the command \`${this.bot.getPrefix(this.guild)}setup start\` to start the game.*`;
+        str += `\n*To cancel this setup, run the command \`${this.bot.getPrefix(this.guild)}setup cancel\`.*`;
         str += `\n*Setup times out automatically 120 seconds after the last command.*`
 
         return str;
@@ -120,10 +120,12 @@ class GameSetup {
                         throw new Error('Error setting game option: unidentified variable');
                 }
                 this.setupmsg.edit(this.getSetupMessage());
+                msg.delete();
                 break;
 
             case 'turnorder':
             case 'turns':
+            case 'turn':
                 if (!this.game.gameData.turnOrder) {
                     this.channel.send("This game does not have turn orders!");
                     break;
@@ -132,15 +134,19 @@ class GameSetup {
                 if (args[0] == "random") {
                     this.randomTurns = !this.randomTurns;
                     this.channel.send(`Random Turn Order has been toggled to: \`${this.randomTurns}\`.`);
+                    this.setupmsg.edit(this.getSetupMessage());
                 }
                 else if (this.randomTurns) {
                     this.channel.send("Random turn order is currently on - please turn it off to enable manual turn setting.");
+                    break;
                 }
                 else if (msg.mentions.members.size === 0) {
                     this.channel.send("You have not mentioned any player to change the position of!");
+                    break;
                 }
                 else if (!this.turnOrder.find(element => element.id === user.id)) {
                     this.channel.send("The user could not be found in the players list! Have you invited them yet?");
+                    break;
                 }
                 else {
                     // OPTIMIZE: There's probably a more efficient/cleaner way to do this?
@@ -154,7 +160,9 @@ class GameSetup {
                     var temp = this.turnOrder.filter(element => element.id !== user.id);
                     temp.splice(pos - 1, 0, user); // Using pos - 1 here because arrays start at 0 and not 1
                     this.turnOrder = temp;
+                    this.setupmsg.edit(this.getSetupMessage());
                 }
+                msg.delete();
                 break;
 
             case 'resend':
