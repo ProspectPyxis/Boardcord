@@ -22,6 +22,7 @@
     "better-sqlite3": "^7.1.1",
     "discord.js": "^12.4.1",
     "enmap": "^5.8.2",
+    "knuth-shuffle": "^1.0.8",
     "logform": "^2.2.0",
     "nanoid": "^3.1.18",
     "node-gyp": "^7.1.2",

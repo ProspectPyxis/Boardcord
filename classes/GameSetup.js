@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 const { nanoid } = require('nanoid');
+const shuffle = require('knuth-shuffle').knuthShuffle;
 
 class GameSetup {
 
@@ -163,7 +164,11 @@ class GameSetup {
 
             case 'start':
                 clearTimeout(this.timer);
-                this.bot.activeGames[this.guild.id][this.channel.id] = new this.game(this.id, this.bot, this.turnOrder ? this.turnOrder : this.players, this.options);
+                this.bot.activeGames[this.guild.id][this.channel.id] = new this.game(
+                    this.id,
+                    this.bot,
+                    this.turnOrder ? (this.randomTurns && shuffle(this.turnOrder)) || this.turnOrder : this.players,
+                    this.options);
                 return;
 
             case 'cancel':

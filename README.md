@@ -11,6 +11,7 @@ This bot requires the following packages:
 - `enmap` and `better-sqlite-pool`
 - `winston` and `logform`
 - `nanoid`
+- `knuth-shuffles`
 
 ## Self-hosting
 If you want to host the bot yourself, then you'll first need to install node.js. I won't be getting into the instructions for that here, since it shouldn't be too hard to look up on your own - and if you can't complete this step, then self-hosting may not be the wisest idea anyways, as you may run into many basic issues in the attempt.
