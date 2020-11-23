@@ -31,4 +31,10 @@ module.exports = (bot) => {
         return bot.getConfig(server).prefix;
     }
 
+    bot.wait = async (ms) => {
+        return new Promise(resolve => {
+            setTimeout(resolve, ms);
+        });
+    }
+
 }

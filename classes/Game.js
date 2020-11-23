@@ -50,10 +50,13 @@ class Game {
      * This should be called by GameSetup after constructing the game object proper
      */
     async init() {
-        let countdown = await this.channel.send("The game starts in **3**...");
-        await setTimeout(() => countdown.edit("The game starts in **2**..."), 1000);
-        await setTimeout(() => countdown.edit("The game starts in **1**..."), 1000);
-        await countdown.delete();
+        var countdown = await this.channel.send("The game starts in **3**...");
+        await this.bot.wait(1000);
+        countdown.edit("The game starts in **2**...");
+        await this.bot.wait(1000);
+        countdown.edit("The game starts in **1**...");
+        await this.bot.wait(1000);
+        countdown.delete();
         this.startGame();
         this.gamemsg = await this.channel.send(this.getGameMessage());
         this.logmsg = await this.channel.send (this.getLog());
@@ -82,7 +85,9 @@ class Game {
      * @returns {string} - the game log, compiled into a human-readable format.
      */
     getLog() {
-        let str = "*Game log:*\n```markdown\n- "
+        let str = "*Game log:*\n```markdown\n"
+        if (this.log.length === 0) str += "Currently empty.";
+        else str += "- ";
         str += this.log.slice(Math.max(this.log.length - 5, 0)).join("\n- ");
         str += "```"
 

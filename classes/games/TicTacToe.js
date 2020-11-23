@@ -46,14 +46,14 @@ class TicTacToe extends Game {
 
     getGameMessage() {
         let str = "";
-        str += `**Now playing:** ${this.constructor.gameData.game}\n\n`;
-        str += "**Board:**\n"
+        str += `**Now playing:** ${this.constructor.gameData.name}\n\n`;
+        str += "**Board:**"
         str += this.getBoard();
 
         str += `\n\n**Players:**\n${this.players[0].username} - :x:\n${this.players[1].username} - :o:`;
 
         if (!this.winner) {
-            str += `\n\nIt is currently **${this.players[this.currentPlayer].username}**'s turn.'`;
+            str += `\n\nIt is currently **${this.players[this.currentPlayer].username}**'s turn.`;
             str += "\nType the letter you wish to put your marker in!";
         } else {
             str += "\n\n**The game is over!**"
@@ -68,9 +68,10 @@ class TicTacToe extends Game {
      * @override
      */
     getBoard() {
-        let str = "> ";
+        let str = "";
         let pos = 0;
         for (let i = 0; i < this.board.length; i++) {
+            str += "\n> ";
             for (let j = 0; j < this.board[i].length; j++) {
                 if (this.board[i][j] - 1 >= 0 && this.board[i][j] - 1 < this.markers.length) {
                     str += this.markers[this.board[i][j] - 1][0];
@@ -80,7 +81,6 @@ class TicTacToe extends Game {
                 str += " ";
                 pos++;
             }
-            str += "\n> ";
         }
 
         return str;
@@ -95,20 +95,25 @@ class TicTacToe extends Game {
             () => this.channel.send(`${this.players[this.currentPlayer]} Please make your move within 15 seconds or your turn will be skipped!`),
             45000
         )
+
         try {
-            var collector = await this.channel.awaitMessages(response => {
-                response.author.id === this.players[this.currentPlayer].id &&
-                    response.content.length === 1 &&
-                    response.content.toLowerCase().charCodeAt() >= 97 &&
-                    response.content.toLowerCase().charCodeAt() - 97 < this.boardSize
+            var collected = await this.channel.awaitMessages(response => {
+                const l = response.content.toLowerCase().charCodeAt();
+
+                return response.author.id == this.players[this.currentPlayer].id &&
+                    response.content.length == 1 &&
+                    l >= 97 &&
+                    l - 97 < this.boardSize;
             }, {
                 max: 1,
                 time: 60000,
                 errors: ['time']
             })
         } catch (e) {
-            await this.channel.send(`Player **${this.players[this.currentPlayer].username}** has timed out - skipping to next player.`);
-            await this.addLog(`[${this.players[this.currentPlayer].username}] timed out - skipping turn.`);
+            await Promise.allSettled([
+                this.channel.send(`Player **${this.players[this.currentPlayer].username}** has timed out - skipping to next player.`),
+                this.addLog(`[${this.players[this.currentPlayer].username}] timed out - skipping turn.`)
+            ]);
             this.currentPlayer = (this.currentPlayer + 1) % this.players.length;
             await this.gamemsg.edit(this.getGameMessage());
             this.gameLoop();
@@ -116,14 +121,14 @@ class TicTacToe extends Game {
         }
         clearTimeout(timer);
 
-        var pos = collector.first().content.toLowerCase().charCodeAt() - 97;
+        var pos = collected.first().content.toLowerCase().charCodeAt() - 97;
         var ypos = Math.floor(pos / this.board.length);
-        var xpos = pos - ypos;
+        var xpos = pos - (ypos * this.board.length);
 
         if (this.board[ypos][xpos] === 0) {
-            collector.first().delete();
-            this.board[ypos][xpos] = this.currentPlayer;
-            await this.addLog(`[${this.players[this.currentPlayer].username}] placed marker [${this.markers[this.currentPlayer][1]}] at position [${String.fromCharCode(pos + 97)}].`);
+            collected.first().delete();
+            this.board[ypos][xpos] = this.currentPlayer + 1;
+            await this.addLog(`[${this.players[this.currentPlayer].username}] placed marker [${this.markers[this.currentPlayer][1]}] at position [${String.fromCharCode(pos + 65)}].`);
             this.winner = this.checkWinner();
             if (this.winner) {
                 this.finishGame();
@@ -135,6 +140,7 @@ class TicTacToe extends Game {
             let err = await this.channel.send("That position is already taken - please try again.");
             err.delete({ timeout: 3000 });
         }
+
         this.gameLoop();
     }
 
@@ -146,7 +152,7 @@ class TicTacToe extends Game {
             await this.addLog("No more moves available! The game ended in a draw.");
             await this.channel.send("**Game over!** This game ended in a **draw.**");
         } else {
-            await this.addLog(`Game over! The winner is: [${this.winner}]!`);
+            await this.addLog(`Game over! The winner is: <${this.winner.username}>!`);
             await this.channel.send(`**Game over!** The winner is: **${this.winner}!**`);
         }
         await this.gamemsg.edit(this.getGameMessage());
@@ -156,12 +162,12 @@ class TicTacToe extends Game {
     checkWinner() {
         for (let i of this.board) {
             if (i.every(v => v !== 0 && v === i[0])) {
-                return this.players[i[0]];
+                return this.players[i[0] - 1];
             }
         }
         for (let i of rotate90(this.board)) {
             if (i.every(v => v !== 0 && v === i[0])) {
-                return this.players[i[0]];
+                return this.players[i[0] - 1];
             }
         }
         // Diagonals checking only works for symmetrical boards
@@ -170,13 +176,13 @@ class TicTacToe extends Game {
                 for (let i = 0; i < this.board.length; i++) {
                     if (this.board[i][i] === 0 || this.board[i][i] !== this.board[0][0]) break diagonals1;
                 }
-                return this.players[this.board[0][0]];
+                return this.players[this.board[0][0] - 1];
             }
             diagonals2: {
                 for (let i = 0; i < this.board.length; i++) {
-                    if (this.board[i][this.board.length - 1 - i] === 0 || this.board[i][this.board.length - 1 - i] !== this.board[0][0]) break diagonals2;
+                    if (this.board[i][this.board.length - (1 + i)] === 0 || this.board[i][this.board.length - (1 + i)] !== this.board[0][this.board.length - 1]) break diagonals2;
                 }
-                return this.players[this.board[0][this.board.length - 1]];
+                return this.players[this.board[0][this.board.length - 1] - 1];
             }
         }
 

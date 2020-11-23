@@ -80,8 +80,8 @@ class GameSetup {
                     this.channel.send(`You've already hit the player limit for this game! (Player limit: ${this.game.gameData.maxPlayers})`);
                     break;
                 }
-                if (this.players.length + msg.mentions.members.size > this.constructor.gameData.maxPlayers) {
-                    this.channel.send(`You've invited too many players! (Player limit: ${this.constructor.gameData.maxPlayers})\nPlease invite less players.`);
+                if (this.players.length + msg.mentions.members.size > this.game.gameData.maxPlayers) {
+                    this.channel.send(`You've invited too many players! (Player limit: ${this.game.gameData.maxPlayers})\nPlease invite less players.`);
                     break;
                 }
 
@@ -179,9 +179,10 @@ class GameSetup {
                 this.bot.activeGames[this.guild.id][this.channel.id] = new this.game(
                     this.id,
                     this.bot,
+                    this.channel,
                     this.turnOrder ? (this.randomTurns && shuffle(this.turnOrder)) || this.turnOrder : this.players,
                     this.options);
-                    this.bot.activeGames[this.guild.id][this.channel.id].init();
+                this.bot.activeGames[this.guild.id][this.channel.id].init();
                 return;
 
             case 'cancel':
@@ -210,6 +211,7 @@ class GameSetup {
             .then((collected) => {
                 this.msg.channel.send(`${user} Invite accepted!`);
                 this.players.push(user);
+                if (this.turnOrder) this.turnOrder.push(user);
                 this.setupmsg.edit(this.getSetupMessage());
             })
             .catch(() => {
