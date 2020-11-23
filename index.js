@@ -73,6 +73,7 @@ const init = async () => {
         bot.logger.log('info', `Loading Game: ${gameName}`);
         const g = require(`./classes/games/${file}`);
         if (!(g instanceof Game)) return bot.logger.log('error', `Unable to load game ${gameName}: Not an instance of Game`)
+        // TODO: Check for repeat games
         bot.games.push(g);
     });
 

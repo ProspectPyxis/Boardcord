@@ -44,16 +44,20 @@ class Game {
         this.log = [];
         this.logmsg;
 
+        this.init();
+
     }
 
-    /**
-     * This function should contain the core game loop.
-     * In most cases, this would contain an awaitMessages loop constantly listening for the current player.
-     *
-     * @async
-     * @abstract
-     */
-    async gameLoop() {}
+    async init() {
+        let countdown = await this.channel.send("The game starts in **3**...");
+        await setTimeout(() => countdown.edit("The game starts in **2**..."), 1000);
+        await setTimeout(() => countdown.edit("The game starts in **1**..."), 1000);
+        await countdown.delete();
+        this.startGame();
+        this.gamemsg = await this.channel.send(this.getGameMessage());
+        this.logmsg = await this.channel.send (this.getLog());
+        this.gameLoop();
+    }
 
     /**
      * This should be different for every game, but at the minimum this function should likely call this.getBoard()
@@ -72,6 +76,31 @@ class Game {
     getBoard() {
         return '';
     }
+
+    /**
+     * @returns {string} - the game log, compiled into a human-readable format.
+     */
+    getLog() {
+        let str = "*Game log:*\n```markdown\n- "
+        str += this.log.slice(Math.max(this.log.length - 5, 0)).join("\n- ");
+        str += "```"
+
+        return str;
+    }
+
+    /**
+     * @abstract
+     */
+    startGame() { }
+
+    /**
+     * This function should contain the core game loop.
+     * In most cases, this would contain an awaitMessages loop constantly listening for the current player.
+     *
+     * @async
+     * @abstract
+     */
+    async gameLoop() {}
 
     /**
      * This should be called upon receiving a message from a player.
