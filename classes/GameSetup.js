@@ -163,6 +163,10 @@ class GameSetup {
                 break;
 
             case 'start':
+                if (this.players.length < this.game.gameData.minPlayers) {
+                    this.channel.send(`This game does not have enough players to start yet! ${this.players.length - this.game.gameData.minPlayers} more player(s) needed.`);
+                    break;
+                } 
                 clearTimeout(this.timer);
                 this.bot.activeGames[this.guild.id][this.channel.id] = new this.game(
                     this.id,
