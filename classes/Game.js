@@ -36,10 +36,13 @@ class Game {
         this.players = players;
         this.options = options;
 
+        // other is unused for now, leaving that for future expansion purposes
+
         this.guild = channel.guild;
 
         this.gamemsg;
         this.log = [];
+        this.logmsg;
 
     }
 
@@ -53,7 +56,18 @@ class Game {
     async gameLoop() {}
 
     /**
+     * This should be different for every game, but at the minimum this function should likely call this.getBoard()
+     *
+     * @returns {string} - The full game message string.
+     * @abstract
+     */
+    getGameMessage() {
+        return '';
+    }
+
+    /**
      * @returns {string} - The representation of the game board.
+     * @abstract
      */
     getBoard() {
         return '';
@@ -65,13 +79,22 @@ class Game {
      * @param {Discord.Message} message - The message to be processed.
      * @abstract
      */
-    onMessage(message) {}
+    onMessage(message) { }
+
+    /**
+     * @abstract
+     */
+    finishGame() { }
 
     /**
      * This function should cleanly end the game.
      * This should NOT be overridden - any code to run after a game finishes should be in finishGame(), and make sure to run gameEnd() at the end of that function.
      */
-    gameEnd() {}
+    gameEnd() {
+        delete this.bot.activeGames[this.guild.id][this.channel.id];
+        if (Object.keys(this.bot.activeGames[this.guild.id]).length === 0 && this.bot.activeGames.constructor === Object)
+            delete this.bot.activeGames[this.guild.id];
+    }
 
 }
 
