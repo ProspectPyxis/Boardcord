@@ -14,8 +14,9 @@ class Game {
             minPlayers: 1,
             maxPlayers: 1,
             turnOrder: false,
-            defaultOptions: {}
-        }
+            defaultOptions: {},
+            variants: []
+        };
     }
 
     /**
@@ -43,11 +44,11 @@ class Game {
         this.gamemsg;
         this.log = [];
         this.logmsg;
-
-        this.init();
-
     }
 
+    /**
+     * This should be called by GameSetup after constructing the game object proper
+     */
     async init() {
         let countdown = await this.channel.send("The game starts in **3**...");
         await setTimeout(() => countdown.edit("The game starts in **2**..."), 1000);
