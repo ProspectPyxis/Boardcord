@@ -121,7 +121,7 @@ dist
 
 .eslintrc.js
 
-config/global_config.js
-config/guildsettings.sqlite*
+global_config.js
+data/
 
 commands/testcommand.js

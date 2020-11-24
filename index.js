@@ -7,7 +7,7 @@ const Enmap = require("enmap");
 const winston = require("winston");
 const { format } = require("logform");
 
-const config = require("./config/global_config.js");
+const config = require(".global_config.js");
 
 const Game = require("./classes/Game.js");
 
