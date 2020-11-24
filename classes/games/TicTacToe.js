@@ -144,10 +144,11 @@ class TicTacToe extends Game {
         if (response.content == this.bot.getPrefix(this.guild) + "game cancel") return true;
         if (response.author.id != this.players[this.currentPlayer].id) return false;
 
-        const inputs = response.content.split(/ +/g);
+        const inputs = response.content.length === this.markersPerTurn ? [...response.content] : response.content.split(/ +/g);
         if (inputs.length !== this.markersPerTurn) return false;
 
         for (let i of inputs) {
+            if (i.length !== 1) return false;
             if (i.toLowerCase().charCodeAt() < 97 || i.toLowerCase().charCodeAt() >= this.boardSize + 97)
                 return false;
         }

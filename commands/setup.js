@@ -29,6 +29,12 @@ exports.run = async (bot, message, args) => { // eslint-disable-line no-unused-v
         if (bot.activeGames[message.guild.id] && Object.keys(bot.activeGames[message.guild.id]).length >= bot.config.gamesPerSever)
             return message.channel.send(`The game limit per guild has been hit. Please wait for an existing game to end before trying again. (limit: ${bot.config.gamesPerSever})`);
 
+        // Check if using variant shortcut
+        if (args.indexOf("/") !== -1) {
+            var variant = args.slice(args.indexOf("/") + 1, args.length);
+            args = args.slice(0, args.indexOf("/"));
+        }
+
         // Check if game exists
         let gameIndex = bot.games.findIndex(element => {
             let g = args.join(' ').toLowerCase();
@@ -42,6 +48,11 @@ exports.run = async (bot, message, args) => { // eslint-disable-line no-unused-v
 
         if (!bot.activeGames[message.guild.id]) bot.activeGames[message.guild.id] = {};
         if (!bot.activeGames[message.guild.id][message.channel.id]) bot.activeGames[message.guild.id][message.channel.id] = new GameSetup(bot, message, bot.games[gameIndex]);
+
+        if (variant) {
+            bot.activeGames[message.guild.id][message.channel.id].setVariant(variant.join(' '));
+        }
+
         await bot.activeGames[message.guild.id][message.channel.id].init();
     }
 };

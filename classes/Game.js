@@ -98,10 +98,10 @@ class Game {
      * @returns {string} - the game log, compiled into a human-readable format.
      */
     getLog() {
-        let str = "*Game log:*\n```markdown\n"
+        let str = "*Game log:*\n```diff\n"
         if (this.log.length === 0) str += "Currently empty.";
-        else str += "- ";
-        str += this.log.slice(Math.max(this.log.length - 5, 0)).join("\n- ");
+        else str += "+ ";
+        str += this.log.slice(Math.max(this.log.length - 5, 0)).join("\n+ ");
         str += "```"
 
         return str;

@@ -42,6 +42,20 @@ class GameSetup {
         this.options = game.options;
     }
 
+    setVariant(variant) {
+        if (this.bot.gameVariants[this.game.name].length === 0) return;
+
+        var vIndex = this.bot.gameVariants[this.game.name].findIndex(element => {
+            return (
+                element.gameData.variantName.toLowerCase() === variant.toLowerCase() ||
+                element.gameData.aliases.some(e => e.toLowerCase() === variant.toLowerCase())
+            );
+        })
+
+        if (vIndex !== -1)
+        this.variant = this.bot.gameVariants[this.game.name][vIndex];
+    }
+
     async init() {
         this.setupmsg = await this.channel.send(this.getSetupMessage());
         this.timer = setTimeout(() => {
