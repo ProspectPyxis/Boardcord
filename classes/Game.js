@@ -71,8 +71,9 @@ class Game {
         await this.bot.wait(1000);
         countdown.delete();
         this.startGame();
+        this.bot.logger.log('info', `A new game has started! (game ID ${this.id} in channel ID ${this.channel.id} in guild ID ${this.guild.id})`);
         this.gamemsg = await this.channel.send(this.getGameMessage());
-        this.logmsg = await this.channel.send (this.getLog());
+        this.logmsg = await this.channel.send(this.getLog());
         this.gameLoop();
     }
 
@@ -120,7 +121,7 @@ class Game {
      *
      * @abstract
      */
-    startGame() { }
+    startGame() {}
 
     /**
      * This function should contain the core game loop.
@@ -135,7 +136,7 @@ class Game {
         await this.gamemsg.delete();
         await this.logmsg.delete();
         this.gamemsg = await this.channel.send(this.getGameMessage());
-        this.logmsg = await this.channel.send (this.getLog());
+        this.logmsg = await this.channel.send(this.getLog());
     }
 
     /**
@@ -143,7 +144,7 @@ class Game {
      *
      * @abstract
      */
-    finishGame() { }
+    finishGame() {}
 
     async abortGame(sender) {
         if (this.abort.includes(sender.id)) {
@@ -185,13 +186,19 @@ class Game {
      * This should NOT be overridden - any code to run after a game finishes should be in finishGame(), and make sure to run gameEnd() at the end of that function.
      */
     async gameEnd() {
-        let timeoutmsg = await this.channel.send(`You may use the command \`${this.bot.getPrefix(this.guild)}setup redo\` to start another setup of this game with the same options and players.\nThis must be done within 20 seconds.`)
-        this.timeout = setTimeout(() => {
-            timeoutmsg.edit("This game has timed out - please start a new setup if you wish to play another game.");
+        if (this.bot.getConfig(this.guild).allowRedo) {
+            let timeoutmsg = await this.channel.send(`You may use the command \`${this.bot.getPrefix(this.guild)}setup redo\` to start another setup of this game with the same options and players.\nThis must be done within 20 seconds.`)
+            this.timeout = setTimeout(() => {
+                timeoutmsg.edit("This game has timed out - please start a new setup if you wish to play another game.");
+                delete this.bot.activeGames[this.guild.id][this.channel.id];
+                if (Object.keys(this.bot.activeGames[this.guild.id]).length === 0 && this.bot.activeGames.constructor === Object)
+                    delete this.bot.activeGames[this.guild.id];
+            }, 20000);
+        } else {
             delete this.bot.activeGames[this.guild.id][this.channel.id];
             if (Object.keys(this.bot.activeGames[this.guild.id]).length === 0 && this.bot.activeGames.constructor === Object)
                 delete this.bot.activeGames[this.guild.id];
-        }, 20000);
+        }
     }
 
     renewGame(message) {
