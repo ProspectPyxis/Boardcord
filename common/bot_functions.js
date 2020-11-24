@@ -17,8 +17,8 @@ module.exports = (bot) => {
         }
     };
 
-    bot.getConfig = (server) => { // eslint-disable-line no-unused-vars
-        return bot.config;
+    bot.getConfig = (server) => {
+        return bot.guildsettings.ensure(server.id, bot.defaultsettings);
     }
 
     /**

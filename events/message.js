@@ -1,7 +1,6 @@
 module.exports = async (bot, message) => {
     if (message.author.bot) return;
 
-    // TODO: Add per-server configuration
     const config = bot.getConfig();
 
     // Checks if the bot was mentioned, with no message after it, returns the prefix.

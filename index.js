@@ -28,6 +28,18 @@ I'm not sure if the GC code is necessary but better safe than memory leak down t
 */
 bot.activeGames = {};
 
+bot.guildsettings = new Enmap({
+  name: "guildsettings",
+  fetchAll: false,
+  autoFetch: true,
+  cloneLevel: 'deep'
+});
+
+bot.defaultsettings = {
+    prefix: bot.config.prefix,
+    allowRedo: true
+};
+
 // Setup logger
 bot.logger = winston.createLogger({
     level: "debug",
