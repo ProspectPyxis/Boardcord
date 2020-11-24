@@ -18,7 +18,6 @@ class Game {
             maxPlayers: 1,
             turnOrder: false,
             defaultOptions: {},
-            variants: [],
             variantName: null
         };
     }
@@ -70,10 +69,10 @@ class Game {
         countdown.edit(":warning: The game begins in **1**...");
         await this.bot.wait(1000);
         countdown.delete();
-        this.startGame();
-        this.bot.logger.log('info', `A new game has started! (game ID ${this.id} in channel ID ${this.channel.id} in guild ID ${this.guild.id})`);
         this.gamemsg = await this.channel.send(this.getGameMessage());
         this.logmsg = await this.channel.send(this.getLog());
+        this.startGame();
+        this.bot.logger.log('info', `A new game has started! (game ID [${this.id}] in channel ID [${this.channel.id}] in guild ID [${this.guild.id})]`);
         this.gameLoop();
     }
 
@@ -119,9 +118,10 @@ class Game {
     /**
      * This method should contain initial variable setups and anything to add to the game log at the start, if needed
      *
+     * @async
      * @abstract
      */
-    startGame() {}
+    async startGame() {}
 
     /**
      * This function should contain the core game loop.
@@ -206,6 +206,7 @@ class Game {
      * This should NOT be overridden - any code to run after a game finishes should be in finishGame(), and make sure to run gameEnd() at the end of that function.
      */
     async gameEnd() {
+        this.bot.logger.log('info', `Game ID ${this.id} has ended!`);
         if (this.bot.getConfig(this.guild).allowRedo) {
             let timeoutmsg = await this.channel.send(`You may use the command \`${this.bot.getPrefix(this.guild)}setup redo\` to start another setup of this game with the same options and players.\nThis must be done within 20 seconds.`)
             this.timeout = setTimeout(() => {
@@ -225,7 +226,8 @@ class Game {
         if (!this.timeout) return;
         clearTimeout(this.timeout);
         if (!this.bot[this.guild.id]) this.bot[this.guild.id] = {};
-        this.bot.activeGames[this.guild.id][this.channel.id] = new GameSetup(this.bot, message, this.constructor);
+        let game = this.constructor.gameData.variantName ? Object.getPrototypeOf(Object.getPrototypeOf(this)).constructor : this.constructor;
+        this.bot.activeGames[this.guild.id][this.channel.id] = new GameSetup(this.bot, message, game);
         this.bot.activeGames[this.guild.id][this.channel.id].setFromGame(this);
         this.bot.activeGames[this.guild.id][this.channel.id].init();
     }

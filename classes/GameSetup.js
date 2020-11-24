@@ -28,6 +28,7 @@ class GameSetup {
         this.options = game.gameData.defaultOptions;
         this.turnOrder = game.gameData.turnOrder ? [triggermsg.author] : null;
         this.randomTurns = false;
+        this.variant;
 
     }
 
@@ -35,6 +36,9 @@ class GameSetup {
         var toPlay = game.players.filter(element => element.id !== this.gm.id);
         this.players = this.players.concat(toPlay);
         if (this.turnOrder) this.turnOrder = this.players;
+        if (game.constructor.gameData.variantName) {
+            this.variant = this.bot.gameVariants[this.game.name].find(e => e.gameData.variantName === game.constructor.gameData.variantName);
+        }
         this.options = game.options;
     }
 
@@ -61,6 +65,12 @@ class GameSetup {
             str += "\n\n**Current turn order:**\n";
             if (this.randomTurns) str += "*Randomized!*";
             else str += this.turnOrder.join(", ");
+        }
+
+        if (this.bot.gameVariants[this.game.name].length > 0) {
+            str += "\n\n**Variant selected:**\n";
+            if (!this.variant) str += "Normal";
+            else str += this.variant.gameData.variantName;
         }
 
         if (Object.keys(this.options).length !== 0 || this.options.constructor !== Object) {
@@ -139,23 +149,19 @@ class GameSetup {
                     this.randomTurns = !this.randomTurns;
                     this.channel.send(`Random Turn Order has been toggled to: \`${this.randomTurns}\`.`);
                     this.setupmsg.edit(this.getSetupMessage());
-                }
-                else if (this.randomTurns) {
+                } else if (this.randomTurns) {
                     this.channel.send("Random turn order is currently on - please turn it off to enable manual turn setting.");
                     break;
-                }
-                else if (msg.mentions.members.size === 0) {
+                } else if (msg.mentions.members.size === 0) {
                     this.channel.send("You have not mentioned any player to change the position of!");
                     break;
-                }
-                else if (!this.turnOrder.find(element => element.id === user.id)) {
+                } else if (!this.turnOrder.find(element => element.id === user.id)) {
                     this.channel.send("The user could not be found in the players list! Have you invited them yet?");
                     break;
-                }
-                else {
+                } else {
                     // OPTIMIZE: There's probably a more efficient/cleaner way to do this?
                     var pos = parseInt(args[0]);
-                    if (!pos || pos-1 < 0 || pos-1 > this.players.length) {
+                    if (!pos || pos - 1 < 0 || pos - 1 > this.players.length) {
                         this.channel.send(`Position ${args[0]} is undefined! Did you order your arguments correctly?`);
                         break;
                     }
@@ -166,6 +172,39 @@ class GameSetup {
                     this.turnOrder = temp;
                     this.setupmsg.edit(this.getSetupMessage());
                 }
+                break;
+
+            case 'variant':
+                if (this.bot.gameVariants[this.game.name].length === 0) {
+                    this.channel.send("This game has no variants available!");
+                    break;
+                }
+
+                if (args.join(' ').match(/^(none|null|normal)$/i)) {
+                    this.variant = null;
+                    this.channel.send("The game variant has been set to: **Normal**.");
+                    this.setupmsg.edit(this.getSetupMessage());
+                    break;
+                }
+
+                var variantIndex = this.bot.gameVariants[this.game.name].findIndex(element => {
+                    let g = args.join(' ').toLowerCase();
+
+                    return (
+                        element.gameData.variantName.toLowerCase() === g ||
+                        element.gameData.aliases.some(e => e.toLowerCase() === g)
+                    );
+                })
+
+                if (variantIndex === -1) {
+                    this.channel.send("The variant you input could not be found!");
+                    break;
+                }
+
+                this.variant = this.bot.gameVariants[this.game.name][variantIndex];
+                this.channel.send(`The game variant has been set to: **${this.variant.gameData.variantName}**.`);
+                this.setupmsg.edit(this.getSetupMessage());
+
                 break;
 
             case 'resend':
@@ -199,12 +238,20 @@ class GameSetup {
                     break;
                 }
                 clearTimeout(this.timer);
-                this.bot.activeGames[this.guild.id][this.channel.id] = new this.game(
-                    this.id,
-                    this.bot,
-                    this.channel,
-                    this.turnOrder ? (this.randomTurns && shuffle(this.turnOrder)) || this.turnOrder : this.players,
-                    this.options);
+                if (!this.variant)
+                    this.bot.activeGames[this.guild.id][this.channel.id] = new this.game(
+                        this.id,
+                        this.bot,
+                        this.channel,
+                        this.turnOrder ? (this.randomTurns && shuffle(this.turnOrder)) || this.turnOrder : this.players,
+                        this.options);
+                else
+                    this.bot.activeGames[this.guild.id][this.channel.id] = new this.variant(
+                        this.id,
+                        this.bot,
+                        this.channel,
+                        this.turnOrder ? (this.randomTurns && shuffle(this.turnOrder)) || this.turnOrder : this.players,
+                        this.options);
                 this.bot.activeGames[this.guild.id][this.channel.id].init();
                 return;
 

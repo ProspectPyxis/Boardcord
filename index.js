@@ -19,7 +19,9 @@ require("./common/bot_functions.js")(bot);
 
 bot.commands = new Enmap();
 bot.aliases = new Enmap();
+
 bot.games = [];
+bot.gameVariants = {};
 
 /*
 There's probably a better way to do this, but enmaps can't store classes
@@ -78,7 +80,8 @@ const init = async () => {
         bot.on(eventName, event.bind(null, bot));
     });
 
-    const gameFiles = await readdir("./classes/games/");
+    const gameFilesUnmapped = await readdir("./classes/games/", { withFileTypes: true });
+    const gameFiles = gameFilesUnmapped.filter(dirent => dirent.isFile()).map(dirent => dirent.name);
     bot.logger.log('info', `Loading a total of ${gameFiles.length} games.`);
     gameFiles.forEach(file => {
         const gameName = file.split(".")[0];
@@ -88,6 +91,20 @@ const init = async () => {
         // TODO: Check for repeat games
         bot.games.push(g);
     });
+
+    for (let g of bot.games) {
+        const gameVariantFiles = await readdir(`./classes/games/variants/${g.name}/`);
+        if (gameVariantFiles.length === 0) continue;
+        bot.logger.log('info', `Loading a total of ${gameVariantFiles.length} variants for game ${g.name}.`);
+        bot.gameVariants[g.name] = [];
+        gameVariantFiles.forEach(file => {
+            const variantName = file.split(".")[0];
+            bot.logger.log('info', `Loading Variant: ${variantName}`);
+            const v = require(`./classes/games/variants/${g.name}/${file}`);
+            if (!(v.prototype instanceof g)) return bot.logger.log('error', `Unable to load variant ${variantName}: Not an instance of ${g.name}`);
+            bot.gameVariants[g.name].push(v);
+        });
+    }
 
     bot.logger.log('info', "Logging in...");
     bot.login(bot.config.token);

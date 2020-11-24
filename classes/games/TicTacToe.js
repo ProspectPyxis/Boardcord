@@ -1,8 +1,6 @@
 const Game = require('../Game.js');
 const rotate90 = require('2d-array-rotation').rotate90;
 
-const DansVariation = require('./variants/TicTacToe/DansVariation.js');
-
 class TicTacToe extends Game {
 
     // TODO: Refactor this to allow for easily expanding with variants like multi-move, more players, etc.
@@ -17,8 +15,6 @@ class TicTacToe extends Game {
         dat.minPlayers = 2;
         dat.maxPlayers = 2;
         dat.turnOrder = true;
-
-        dat.variants = [DansVariation];
 
         return dat;
     }
@@ -52,7 +48,7 @@ class TicTacToe extends Game {
      */
     getGameMessage() {
         let str = "";
-        str += `**Now playing:** ${this.constructor.gameData.name}\n\n`;
+        str += `**Now playing:** ${this.constructor.gameData.name}${this.constructor.gameData.variantName ? ", " + this.constructor.gameData.variantName : ""}\n\n`;
         str += "**Board:**"
         str += this.getBoard();
 
@@ -103,7 +99,7 @@ class TicTacToe extends Game {
     /**
      * @override
      */
-    startGame() {
+    async startGame() {
         // Board size is bound to 26 for now because weird stuff happens with input otherwise
         // TODO: Add handler for board sizes bigger than 26
         this.boardSize = Math.min(this.board.length * this.board[0].length, 26)

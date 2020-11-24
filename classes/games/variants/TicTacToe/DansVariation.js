@@ -1,5 +1,6 @@
 const TicTacToe = require('../../TicTacToe.js');
-const chance = require('chance');
+const Chance = require('chance');
+const chance = new Chance();
 
 class DansVariation extends TicTacToe {
 
@@ -8,7 +9,7 @@ class DansVariation extends TicTacToe {
      */
     static get gameData() {
         let dat = super.gameData;
-        dat.aliases = ["dansvariation", "Dans variation"];
+        dat.aliases = ["dansvariation", "Dans variation", "dans"];
         dat.variantName = "Dan's Variation";
 
         return dat;
@@ -19,7 +20,7 @@ class DansVariation extends TicTacToe {
         super(id, bot, channel, players, options, other);
 
         this.currentPlayer = 0;
-        // Board must have consistent amounts of rows and columns
+
         this.board = [
             [0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0],
@@ -32,17 +33,17 @@ class DansVariation extends TicTacToe {
         this.markers = [
             [":x:", "X"],
             [":o:", "O"],
-            [":asterisk:", "BLOCKER"]
+            [":eight_spoked_asterisk:", "BLOCKER"]
         ];
     }
 
     /**
      * @override
      */
-    startGame() {
+    async startGame() {
         super.startGame();
 
-        const blocked = chance.unique(chance.natural, 3, { min: 0, max: 24 });
+        const blocked = chance.unique(chance.natural, 3, { min: 0, max: 24 }).sort((a, b) => a - b);
         let blockedL = [];
 
         for (let i of blocked) {
@@ -52,7 +53,10 @@ class DansVariation extends TicTacToe {
             blockedL.push(String.fromCharCode(i + 65));
         }
 
-        this.addLog(`Tiles [${blockedL.slice(0, -1).join('], [') + '] and [' + blockedL.slice(-1)}] have been blocked!`);
+        await Promise.allSettled([
+            this.addLog(`Tiles [${blockedL.slice(0, -1).join('], [') + '] and [' + blockedL.slice(-1)}] have been blocked!`),
+            this.gamemsg.edit(this.getGameMessage())
+        ]);
     }
 }
 
