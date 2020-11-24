@@ -30,10 +30,10 @@ class TicTacToe extends Game {
             [0, 0, 0],
             [0, 0, 0]
         ];
+        this.boardSize = 0;
 
-        // Board size is bound to 26 for now because weird stuff happens with input otherwise
-        // TODO: Add handler for board sizes bigger than 26
-        this.boardSize = Math.min(this.board.length * this.board[0].length, 26)
+        this.turn = 1;
+        this.markersPerTurn = 1;
 
         // Each marker is an array with element 0 being the emoji representation and element 1 being the text representation
         this.markers = [
@@ -44,6 +44,9 @@ class TicTacToe extends Game {
         this.winner;
     }
 
+    /**
+     * @override
+     */
     getGameMessage() {
         let str = "";
         str += `**Now playing:** ${this.constructor.gameData.name}\n\n`;
@@ -57,8 +60,7 @@ class TicTacToe extends Game {
 
         if (this.aborted) {
             str += "\n**The game has been aborted.**";
-        }
-        else if (!this.winner) {
+        } else if (!this.winner) {
             str += `\nIt is currently ${this.players[this.currentPlayer]}'s turn.`;
             str += "\nType the letter you wish to put your marker in!";
         } else {
@@ -95,6 +97,15 @@ class TicTacToe extends Game {
     /**
      * @override
      */
+    startGame() {
+        // Board size is bound to 26 for now because weird stuff happens with input otherwise
+        // TODO: Add handler for board sizes bigger than 26
+        this.boardSize = Math.min(this.board.length * this.board[0].length, 26)
+    }
+
+    /**
+     * @override
+     */
     async gameLoop() {
         // await this.addLog(`It is now [${this.players[this.currentPlayer].username}]'s turn.`);
         var timer = setTimeout(
@@ -103,16 +114,7 @@ class TicTacToe extends Game {
         )
 
         try {
-            var collected = await this.channel.awaitMessages(response => {
-                if (response.content == this.bot.getPrefix(this.guild) + "game cancel") return true;
-
-                const l = response.content.toLowerCase().charCodeAt();
-
-                return response.author.id == this.players[this.currentPlayer].id &&
-                    response.content.length == 1 &&
-                    l >= 97 &&
-                    l - 97 < this.boardSize;
-            }, {
+            var collected = await this.channel.awaitMessages(response => this.checkMsgMatch(response), {
                 max: 1,
                 time: 60000,
                 errors: ['time']
@@ -128,30 +130,68 @@ class TicTacToe extends Game {
             return;
         }
         clearTimeout(timer);
+        await this.onMessage(collected);
+
+        if (!this.winner && !this.aborted) this.gameLoop();
+    }
+
+    /**
+     * @override
+     */
+    checkMsgMatch(response) {
+        if (response.content == this.bot.getPrefix(this.guild) + "game cancel") return true;
+        if (response.author.id != this.players[this.currentPlayer].id) return false;
+
+        const inputs = response.content.split(/ +/g);
+        if (inputs.length !== this.markersPerTurn) return false;
+
+        for (let i of inputs) {
+            if (i.toLowerCase().charCodeAt() < 97 || i.toLowerCase().charCodeAt() >= this.boardSize + 97)
+                return false;
+        }
+        return true;
+    }
+
+    /**
+     * @override
+     */
+    async onMessage(collected) {
         if (collected.first().content == this.bot.getPrefix(this.guild) + "game abort")
             return;
 
-        var pos = collected.first().content.toLowerCase().charCodeAt() - 97;
-        var ypos = Math.floor(pos / this.board.length);
-        var xpos = pos - (ypos * this.board.length);
+        const inputs = collected.first().content.split(/ +/g);
+        var positions = [];
 
-        if (this.board[ypos][xpos] === 0) {
-            collected.first().delete();
-            this.board[ypos][xpos] = this.currentPlayer + 1;
-            await this.addLog(`[${this.players[this.currentPlayer].username}] placed marker [${this.markers[this.currentPlayer][1]}] at position [${String.fromCharCode(pos + 65)}].`);
-            this.winner = this.checkWinner();
-            if (this.winner) {
-                this.finishGame();
+        for (let i of inputs) {
+            let pos = i.charCodeAt() - 97;
+            let ypos = Math.floor(pos / this.board.length);
+            let xpos = pos - (ypos * this.board.length);
+
+            if (this.board[ypos][xpos] === 0) {
+                this.board[ypos][xpos] = this.currentPlayer + 1;
+                positions.push(i.toUpperCase());
+            } else {
+                let err = await this.channel.send(this.markersPerTurn > 1 ? "That position is already taken - please try again." : "At least one position you input is already taken - please try again.");
+                err.delete({ timeout: 3000 });
                 return;
             }
-            this.currentPlayer = (this.currentPlayer + 1) % this.players.length;
-            await this.gamemsg.edit(this.getGameMessage());
-        } else {
-            let err = await this.channel.send("That position is already taken - please try again.");
-            err.delete({ timeout: 3000 });
         }
 
-        this.gameLoop();
+        collected.first().delete();
+        let str = `position${this.markersPerTurn > 1 ? "s" : ""} [`;
+        if (this.markersPerTurn > 1)
+            str += positions.slice(0, -1).join('], [') + '] and [' + positions.slice(-1) + ']';
+        else
+            str += positions[0] + ']';
+
+        await this.addLog(`[${this.players[this.currentPlayer].username}] placed marker [${this.markers[this.currentPlayer][1]}] at ${str}.`);
+        this.winner = this.checkWinner();
+        if (this.winner) {
+            this.finishGame();
+            return;
+        }
+        this.currentPlayer = (this.currentPlayer + 1) % this.players.length;
+        await this.gamemsg.edit(this.getGameMessage());
     }
 
     /**

@@ -1,7 +1,7 @@
 module.exports = async (bot, message) => {
     if (message.author.bot) return;
 
-    const config = bot.getConfig();
+    const config = bot.getConfig(message.guild);
 
     // Checks if the bot was mentioned, with no message after it, returns the prefix.
     const prefixMention = new RegExp(`^<@!?${bot.user.id}>( |)$`);

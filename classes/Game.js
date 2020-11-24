@@ -132,6 +132,26 @@ class Game {
      */
     async gameLoop() {}
 
+    /**
+     * Utility function for catching messages in gameLoop
+     * At the minimum this should check for the game abort command to properly exit the loop
+     *
+     * @param {Discord.Message} response - the message to query.
+     * @returns {boolean} - whether the message matches the required conditions.
+     * @abstract
+     */
+    checkMsgMatch(response) {
+        return true;
+    }
+
+    /**
+     * Once gameLoop has collected the messages, it should pass the collection into this command to process
+     *
+     * @param {Discord.Collection<Discord.Snowflake,Discord.Message>} collected - The collection of messages to process.
+     * @abstract
+     */
+    async onMessage(collected) { }
+
     async resend() {
         await this.gamemsg.delete();
         await this.logmsg.delete();
