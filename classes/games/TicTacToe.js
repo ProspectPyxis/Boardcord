@@ -128,10 +128,8 @@ class TicTacToe extends Game {
             return;
         }
         clearTimeout(timer);
-        if (collected.first().content == this.bot.getPrefix(this.guild) + "game abort") {
-            clearTimeout(timer);
+        if (collected.first().content == this.bot.getPrefix(this.guild) + "game abort")
             return;
-        }
 
         var pos = collected.first().content.toLowerCase().charCodeAt() - 97;
         var ypos = Math.floor(pos / this.board.length);
@@ -168,7 +166,7 @@ class TicTacToe extends Game {
             await this.channel.send(`**Game over!** The winner is: **${this.winner}!**`);
         }
         await this.gamemsg.edit(this.getGameMessage());
-        await this.gameEnd();
+        this.gameEnd();
     }
 
     checkWinner() {

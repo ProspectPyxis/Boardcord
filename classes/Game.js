@@ -19,7 +19,7 @@ class Game {
             turnOrder: false,
             defaultOptions: {},
             variants: [],
-            variantName: "Normal"
+            variantName: null
         };
     }
 
@@ -155,7 +155,10 @@ class Game {
         if (this.players.length === 2) {
             this.channel.send(`**${sender} has aborted the game.**`);
             this.aborted = true;
-            this.addLog("The game has been aborted. <No contest>.");
+            await Promise.allSettled([
+                this.addLog("The game has been aborted. <No contest>."),
+                this.gamemsg.edit(this.getGameMessage())
+            ]);
             this.gameEnd();
             return;
         }
@@ -166,7 +169,10 @@ class Game {
         if (this.abort.length >= this.players.length / 2) {
             str += "\n**Amount of required votes reached! The game has been aborted.**";
             this.aborted = true;
-            this.addLog("The game has been aborted. <No contest>.");
+            await Promise.allSettled([
+                this.addLog("The game has been aborted. <No contest>."),
+                this.gamemsg.edit(this.getGameMessage())
+            ]);
             this.gameEnd();
         } else {
             this.gameLoop();
