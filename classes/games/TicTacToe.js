@@ -1,6 +1,8 @@
 const Game = require('../Game.js');
 const rotate90 = require('2d-array-rotation').rotate90;
 
+const DansVariation = require('./variants/TicTacToe/DansVariation.js');
+
 class TicTacToe extends Game {
 
     // TODO: Refactor this to allow for easily expanding with variants like multi-move, more players, etc.
@@ -15,6 +17,8 @@ class TicTacToe extends Game {
         dat.minPlayers = 2;
         dat.maxPlayers = 2;
         dat.turnOrder = true;
+
+        dat.variants = [DansVariation];
 
         return dat;
     }
@@ -32,7 +36,6 @@ class TicTacToe extends Game {
         ];
         this.boardSize = 0;
 
-        this.turn = 1;
         this.markersPerTurn = 1;
 
         // Each marker is an array with element 0 being the emoji representation and element 1 being the text representation
@@ -62,7 +65,10 @@ class TicTacToe extends Game {
             str += "\n**The game has been aborted.**";
         } else if (!this.winner) {
             str += `\nIt is currently ${this.players[this.currentPlayer]}'s turn.`;
-            str += "\nType the letter you wish to put your marker in!";
+            if (this.markersPerTurn == 1)
+                str += "\nType the letter you wish to put your marker in!";
+            else
+                str += `\nType the ${this.markersPerTurn} letters you wish to put your marker in!`;
         } else {
             str += "\n**The game is over!**"
             if (this.winner === "draw") str += "\nThe game ended in a **draw.**";

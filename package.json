@@ -1,6 +1,6 @@
 {
   "name": "Boardcord",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A bot for playing various games with your friends right in Discord, for free!",
   "main": "index.js",
   "scripts": {
@@ -21,6 +21,7 @@
     "2d-array-rotation": "^2.1.1",
     "better-sqlite-pool": "^0.3.0",
     "better-sqlite3": "^7.1.1",
+    "chance": "^1.1.7",
     "discord.js": "^12.4.1",
     "enmap": "^5.8.2",
     "knuth-shuffle": "^1.0.8",
