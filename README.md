@@ -5,6 +5,9 @@ A bot for playing quick minigames with other server members, right in Discord it
 ## Adding the bot
 -- WIP --
 
+## Changelog
+Please see [CHANGELOG.md](CHANGELOG.md).
+
 ## Dependencies
 This bot requires the following packages at the minimum:
 - `discord.js`

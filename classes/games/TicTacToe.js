@@ -50,13 +50,19 @@ class TicTacToe extends Game {
         str += "**Board:**"
         str += this.getBoard();
 
-        str += `\n\n**Players:**\n${this.players[0].username} - :x:\n${this.players[1].username} - :o:`;
+        str += `\n\n**Players:**\n`;
+        for (let i = 0; i < this.players.length; i++) {
+            str += `${this.markers[i][0]} - ${this.players[i].username}\n`;
+        }
 
-        if (!this.winner) {
-            str += `\n\nIt is currently **${this.players[this.currentPlayer].username}**'s turn.`;
+        if (this.aborted) {
+            str += "\n**The game has been aborted.**";
+        }
+        else if (!this.winner) {
+            str += `\nIt is currently ${this.players[this.currentPlayer]}'s turn.`;
             str += "\nType the letter you wish to put your marker in!";
         } else {
-            str += "\n\n**The game is over!**"
+            str += "\n**The game is over!**"
             if (this.winner === "draw") str += "\nThe game ended in a **draw.**";
             else str += `\nThe winner is: **${this.winner}!**`
         }
@@ -98,6 +104,8 @@ class TicTacToe extends Game {
 
         try {
             var collected = await this.channel.awaitMessages(response => {
+                if (response.content == this.bot.getPrefix(this.guild) + "game cancel") return true;
+
                 const l = response.content.toLowerCase().charCodeAt();
 
                 return response.author.id == this.players[this.currentPlayer].id &&
@@ -120,6 +128,10 @@ class TicTacToe extends Game {
             return;
         }
         clearTimeout(timer);
+        if (collected.first().content == this.bot.getPrefix(this.guild) + "game abort") {
+            clearTimeout(timer);
+            return;
+        }
 
         var pos = collected.first().content.toLowerCase().charCodeAt() - 97;
         var ypos = Math.floor(pos / this.board.length);
@@ -149,14 +161,14 @@ class TicTacToe extends Game {
      */
     async finishGame() {
         if (this.winner === "draw") {
-            await this.addLog("No more moves available! The game ended in a draw.");
+            await this.addLog("No more moves available! The game ended in a <draw>.");
             await this.channel.send("**Game over!** This game ended in a **draw.**");
         } else {
             await this.addLog(`Game over! The winner is: <${this.winner.username}>!`);
             await this.channel.send(`**Game over!** The winner is: **${this.winner}!**`);
         }
         await this.gamemsg.edit(this.getGameMessage());
-        this.gameEnd();
+        await this.gameEnd();
     }
 
     checkWinner() {

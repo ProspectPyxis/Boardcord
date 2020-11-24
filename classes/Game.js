@@ -1,4 +1,7 @@
 /* eslint-disable no-unused-vars */
+const { nanoid } = require('nanoid');
+const GameSetup = require('./GameSetup.js');
+
 class Game {
 
     /**
@@ -15,7 +18,8 @@ class Game {
             maxPlayers: 1,
             turnOrder: false,
             defaultOptions: {},
-            variants: []
+            variants: [],
+            variantName: "Normal"
         };
     }
 
@@ -41,20 +45,29 @@ class Game {
 
         this.guild = channel.guild;
 
+        this.abort = [];
+        this.aborted = false;
+
         this.gamemsg;
         this.log = [];
         this.logmsg;
+
+        this.timeout;
+    }
+
+    getGame() {
+        return this;
     }
 
     /**
      * This should be called by GameSetup after constructing the game object proper
      */
     async init() {
-        var countdown = await this.channel.send("The game starts in **3**...");
+        var countdown = await this.channel.send(":warning: The game begins in **3**...");
         await this.bot.wait(1000);
-        countdown.edit("The game starts in **2**...");
+        countdown.edit(":warning: The game begins in **2**...");
         await this.bot.wait(1000);
-        countdown.edit("The game starts in **1**...");
+        countdown.edit(":warning: The game begins in **1**...");
         await this.bot.wait(1000);
         countdown.delete();
         this.startGame();
@@ -132,14 +145,56 @@ class Game {
      */
     finishGame() { }
 
+    async abortGame(sender) {
+        if (this.abort.includes(sender.id)) {
+            let temp = await this.channel.send("You've already submitted an abort request to the game!");
+            temp.delete({ timeout: 3000 });
+            return;
+        }
+
+        if (this.players.length === 2) {
+            this.channel.send(`**${sender} has aborted the game.**`);
+            this.aborted = true;
+            this.addLog("The game has been aborted. <No contest>.");
+            this.gameEnd();
+            return;
+        }
+
+        this.abort.push(sender.id);
+
+        let str = `**${sender} has voted to abort the game.**\nThere is now ${this.abort.length}/${Math.ceil(this.players.length / 2)} vote(s) to abort the game.`
+        if (this.abort.length >= this.players.length / 2) {
+            str += "\n**Amount of required votes reached! The game has been aborted.**";
+            this.aborted = true;
+            this.addLog("The game has been aborted. <No contest>.");
+            this.gameEnd();
+        } else {
+            this.gameLoop();
+        }
+        this.channel.send(str);
+    }
+
     /**
      * This function should cleanly end the game.
      * This should NOT be overridden - any code to run after a game finishes should be in finishGame(), and make sure to run gameEnd() at the end of that function.
      */
-    gameEnd() {
-        delete this.bot.activeGames[this.guild.id][this.channel.id];
-        if (Object.keys(this.bot.activeGames[this.guild.id]).length === 0 && this.bot.activeGames.constructor === Object)
-            delete this.bot.activeGames[this.guild.id];
+    async gameEnd() {
+        let timeoutmsg = await this.channel.send(`You may use the command \`${this.bot.getPrefix(this.guild)}setup redo\` to start another setup of this game with the same options and players.\nThis must be done within 20 seconds.`)
+        this.timeout = setTimeout(() => {
+            timeoutmsg.edit("This game has timed out - please start a new setup if you wish to play another game.");
+            delete this.bot.activeGames[this.guild.id][this.channel.id];
+            if (Object.keys(this.bot.activeGames[this.guild.id]).length === 0 && this.bot.activeGames.constructor === Object)
+                delete this.bot.activeGames[this.guild.id];
+        }, 20000);
+    }
+
+    renewGame(message) {
+        if (!this.timeout) return;
+        clearTimeout(this.timeout);
+        if (!this.bot[this.guild.id]) this.bot[this.guild.id] = {};
+        this.bot.activeGames[this.guild.id][this.channel.id] = new GameSetup(this.bot, message, this.constructor);
+        this.bot.activeGames[this.guild.id][this.channel.id].setFromGame(this);
+        this.bot.activeGames[this.guild.id][this.channel.id].init();
     }
 
 }

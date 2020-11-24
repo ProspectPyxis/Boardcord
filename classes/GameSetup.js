@@ -29,8 +29,13 @@ class GameSetup {
         this.turnOrder = game.gameData.turnOrder ? [triggermsg.author] : null;
         this.randomTurns = false;
 
-        this.init();
+    }
 
+    setFromGame(game) {
+        var toPlay = game.players.filter(element => element.id !== this.gm.id);
+        this.players = this.players.concat(toPlay);
+        if (this.turnOrder) this.turnOrder = this.players;
+        this.options = game.options;
     }
 
     async init() {
@@ -120,7 +125,6 @@ class GameSetup {
                         throw new Error('Error setting game option: unidentified variable');
                 }
                 this.setupmsg.edit(this.getSetupMessage());
-                msg.delete();
                 break;
 
             case 'turnorder':
@@ -162,7 +166,6 @@ class GameSetup {
                     this.turnOrder = temp;
                     this.setupmsg.edit(this.getSetupMessage());
                 }
-                msg.delete();
                 break;
 
             case 'resend':
@@ -170,9 +173,29 @@ class GameSetup {
                 this.setupmsg = await this.channel.send(this.getSetupMessage());
                 break;
 
+            case 'leave':
+                this.players = this.players.filter(e => e.id == msg.author.id);
+                if (this.turnOrder) this.turnOrder = this.turnOrder.filter(e => e.id == msg.author.id);
+                this.setupmsg.edit(this.getSetupMessage());
+                this.channel.send(`${msg.author} has left the game.`);
+                break;
+
+            case 'kick':
+                var toKick = msg.mentions.members.first().user;
+                if (!this.players.some(e => e.id == toKick.id)) {
+                    this.channel.send(`Player **${toKick.tag}** is not in this game!`);
+                    break;
+                }
+
+                this.players = this.players.filter(e => e.id == toKick.id);
+                if (this.turnOrder) this.turnOrder = this.turnOrder.filter(e => e.id == toKick.id);
+                this.channel.send(`Player **${toKick.tag} has been kicked from the game.`);
+                this.setupmsg.edit(this.getSetupMessage());
+                break;
+
             case 'start':
                 if (this.players.length < this.game.gameData.minPlayers) {
-                    this.channel.send(`This game does not have enough players to start yet! ${this.players.length - this.game.gameData.minPlayers} more player(s) needed.`);
+                    this.channel.send(`This game does not have enough players to start yet! ${this.game.gameData.minPlayers - this.players.length} more player(s) needed.`);
                     break;
                 }
                 clearTimeout(this.timer);
