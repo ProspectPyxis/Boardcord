@@ -48,14 +48,32 @@ class Game {
     /**
      * This handles limits for various options, such as clamping numbers, limiting possible strings, etc.
      * Should throw an error if any occurs.
+     * This should be overridden, calling super at the end to handle any non-special cases.
      *
      * @static
-     * @abstract
      * @param {string} option - The name of the option to set.
      * @param {string} value - The value to convert.
-     * @returns {*} - The converted value. Return null if the option is not found somehow.
+     * @returns {*} - The converted value. Return null if any non-fatal error occurs.
      */
-    static setOption(option, value) { return; }
+    static setOption(option, value) {
+        if (!this.gameData.defaultOptions[option]) return null;
+
+        switch (typeof this.gameData.defaultOptions[option]) {
+            case "boolean":
+                if (value == "true") return true;
+                else if (value == "false") return false;
+                else throw new Error("Boolean value must be `true` or `false`!");
+
+            case "number":
+                return Number(value);
+
+            case "string":
+                return value;
+
+            default:
+                return null;
+        }
+    }
 
     /**
      * @class
