@@ -31,10 +31,10 @@ I'm not sure if the GC code is necessary but better safe than memory leak down t
 bot.activeGames = {};
 
 bot.guildsettings = new Enmap({
-  name: "guildsettings",
-  fetchAll: false,
-  autoFetch: true,
-  cloneLevel: 'deep'
+    name: "guildsettings",
+    fetchAll: false,
+    autoFetch: true,
+    cloneLevel: 'deep'
 });
 
 bot.defaultsettings = {
@@ -93,7 +93,12 @@ const init = async () => {
     });
 
     for (let g of bot.games) {
-        const gameVariantFiles = await readdir(`./classes/games/variants/${g.name}/`);
+        try {
+            var gameVariantFiles = await readdir(`./classes/games/variants/${g.name}/`);
+        } catch (e) {
+            bot.logger.log('info', `No variants folder found for ${g.name}, skipping`);
+            continue;
+        }
         if (gameVariantFiles.length === 0) continue;
         bot.logger.log('info', `Loading a total of ${gameVariantFiles.length} variants for game ${g.name}.`);
         bot.gameVariants[g.name] = [];
