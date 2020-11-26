@@ -5,22 +5,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 ### Added
-- Variant handler in `setup` command
-- New Tic-tac-toe variant: Dan's Variation
+- Variant handler in `setup` command.
+- New Tic-tac-toe variant: Dan's Variation.
+- New utility functions in Game to simplify code: `matchName`, `setOption`.
 
 ## [0.2.0] - 2020-11-24
 ### Added
-- Per-guild configurations
-- New prefix command
+- Per-guild configurations.
+- New prefix command.
 ### Changed
-- Moved global_config file to root folder
-- Miscellaneous method changes
+- Moved global_config file to root folder.
+- Miscellaneous method changes.
 
 ## [0.1.0] - 2020-11-24
 ### Added
-- Basic commands: `ping`, `help`, `credits`, `shutdown`
-- Common core classes like `Game`, `GameSetup`
-- Command, events, and games loading
-- `setupgame` command, with subcommands `invite`, `option`, `turns`, `resend`, `leave`, `kick`, `start`, `cancel`, `redo`
-- `game` command for managing the running game, with subcommands `resend`, `abort`
-- New game: Tic Tac Toe
+- Basic commands: `ping`, `help`, `credits`, `shutdown`.
+- Common core classes like `Game`, `GameSetup`.
+- Command, events, and games loading.
+- `setupgame` command, with subcommands `invite`, `option`, `turns`, `resend`, `leave`, `kick`, `start`, `cancel`, `redo`.
+- `game` command for managing the running game, with subcommands `resend`, `abort`.
+- New game: Tic-tac-toe.
