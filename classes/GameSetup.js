@@ -213,30 +213,35 @@ class GameSetup {
                 var compareOptions = this.bot.utils.objectsHaveSameKeys(this.options, variantTo ? variantTo.gameData.defaultOptions : this.game.gameData.defaultOptions);
 
                 if (!compareOptions) {
-                    await this.channel.send(`**Warning:** The variant \`${variantTo ? variantTo.gameData.variantName : this.game.gameData.variantName}\`'s options do not match the current variant's options. Changing the variation will cause game options to reset!\nPlease type "confirm" within 10 seconds to confirm this change, or "cancel" to abort this operation.`)
-                    try {
-                        var confirmation = await msg.channel.awaitMessages(response => (
-                            response.author.id == msg.author.id &&
-                            (response.content.toLowerCase() == "confirm" || response.content.toLowerCase() == "cancel")
-                        ), {
-                            max: 1,
-                            time: 10000,
-                            errors: ['time']
-                        });
-                    } catch (e) {
-                        confirmation = "timeout";
-                    }
-
-                    if (confirmation === "timeout") {
-                        this.channel.send("Operation has timed out.");
-                        break;
-                    }
-                    else if (confirmation.first().content.toLowerCase() == "cancel") {
-                        this.channel.send("Variant setting has been cancelled.");
-                        break;
-                    }
-                    else {
+                    // Just skip all the checks if options are already empty anyways
+                    if (Object.keys(this.options).length === 0 && this.options.constructor === Object) {
                         this.options = variantTo ? variantTo.gameData.defaultOptions : this.game.gameData.defaultOptions;
+                    } else {
+                        await this.channel.send(`**Warning:** The variant \`${variantTo ? variantTo.gameData.variantName : this.game.gameData.variantName}\`'s options do not match the current variant's options. Changing the variation will cause game options to reset!\nPlease type "confirm" within 10 seconds to confirm this change, or "cancel" to abort this operation.`)
+                        try {
+                            var confirmation = await msg.channel.awaitMessages(response => (
+                                response.author.id == msg.author.id &&
+                                (response.content.toLowerCase() == "confirm" || response.content.toLowerCase() == "cancel")
+                            ), {
+                                max: 1,
+                                time: 10000,
+                                errors: ['time']
+                            });
+                        } catch (e) {
+                            confirmation = "timeout";
+                        }
+
+                        if (confirmation === "timeout") {
+                            this.channel.send("Operation has timed out.");
+                            break;
+                        }
+                        else if (confirmation.first().content.toLowerCase() == "cancel") {
+                            this.channel.send("Variant setting has been cancelled.");
+                            break;
+                        }
+                        else {
+                            this.options = variantTo ? variantTo.gameData.defaultOptions : this.game.gameData.defaultOptions;
+                        }
                     }
                 }
 
