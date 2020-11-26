@@ -11,7 +11,7 @@ class TicTacToe extends Game {
     static get gameData() {
         let dat = super.gameData;
         dat.name = "Tic-tac-toe";
-        dat.aliases = ["tictactoe", "Tic tac toe", "Xs and Os", "Noughts and Crosses"];
+        dat.aliases = ["Xs and Os", "Noughts and Crosses"];
         dat.minPlayers = 2;
         dat.maxPlayers = 2;
         dat.turnOrder = true;
