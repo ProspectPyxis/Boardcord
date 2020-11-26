@@ -48,7 +48,7 @@ class GameSetup {
         var vIndex = this.bot.gameVariants[this.game.name].findIndex(element => {
             return (
                 element.gameData.variantName.toLowerCase() === variant.toLowerCase() ||
-                element.gameData.aliases.some(e => e.toLowerCase() === variant.toLowerCase())
+                element.gameData.variantAliases.some(e => e.toLowerCase() === variant.toLowerCase())
             );
         })
 
@@ -194,29 +194,66 @@ class GameSetup {
                     break;
                 }
 
-                if (args.join(' ').match(/^(none|null|normal)$/i)) {
-                    this.variant = null;
-                    this.channel.send("The game variant has been set to: **Normal**.");
-                    this.setupmsg.edit(this.getSetupMessage());
-                    break;
-                }
+                var vName = args.join(' ').toLowerCase();
+
+                // This being null indicates resetting to default variant
+                var variantTo = null;
 
                 var variantIndex = this.bot.gameVariants[this.game.name].findIndex(element => {
                     let g = args.join(' ').toLowerCase();
 
                     return (
                         element.gameData.variantName.toLowerCase() === g ||
-                        element.gameData.aliases.some(e => e.toLowerCase() === g)
+                        element.gameData.variantAliases.some(e => e.toLowerCase() === g)
                     );
                 })
 
-                if (variantIndex === -1) {
-                    this.channel.send("The variant you input could not be found!");
-                    break;
+                if (vName) {
+                    if (
+                        !(vName == this.game.gameData.variantName.toLowerCase() || this.game.gameData.variantAliases.some(e => e.toLowerCase() == vName)) &&
+                        variantIndex === -1
+                    ) {
+                        this.channel.send("The variant you input could not be found!");
+                        break;
+                    }
+                    else variantTo = this.bot.gameVariants[this.game.name][variantIndex];
                 }
 
-                this.variant = this.bot.gameVariants[this.game.name][variantIndex];
-                this.channel.send(`The game variant has been set to: **${this.variant.gameData.variantName}**.`);
+                // This looks a bit weird but basically this compares the keys of the setup's options to the keys of the variant's options
+                // This is true if the two keys match, otherwise this is false
+                // This is basically to check if the options need to be reset when setting to a variant
+                var compareOptions = this.bot.utils.objectsHaveSameKeys(this.options, variantTo ? variantTo.gameData.defaultOptions : this.game.gameData.defaultOptions);
+
+                if (!compareOptions) {
+                    await this.channel.send(`**Warning:** The variant \`${variantTo ? variantTo.gameData.variantName : this.game.gameData.variantName}\`'s options do not match the current variant's options. Changing the variation will cause game options to reset!\nPlease type "confirm" within 10 seconds to confirm this change, or "cancel" to abort this operation.`)
+                    try {
+                        var confirmation = await msg.channel.awaitMessages(response => (
+                            response.author.id == msg.author.id &&
+                            (response.content.toLowerCase() == "confirm" || response.content.toLowerCase() == "cancel")
+                        ), {
+                            max: 1,
+                            time: 10000,
+                            errors: ['time']
+                        });
+                    } catch (e) {
+                        confirmation = "timeout";
+                    }
+
+                    if (confirmation === "timeout") {
+                        this.channel.send("Operation has timed out.");
+                        break;
+                    }
+                    else if (confirmation.first().content.toLowerCase() == "cancel") {
+                        this.channel.send("Variant setting has been cancelled.");
+                        break;
+                    }
+                    else {
+                        this.options = variantTo ? variantTo.gameData.defaultOptions : this.game.gameData.defaultOptions;
+                    }
+                }
+
+                this.variant = variantTo;
+                this.channel.send(`The game variant has been set to: **${this.variant ? this.variant.gameData.variantName : this.game.gameData.variantName}**.`);
                 this.setupmsg.edit(this.getSetupMessage());
 
                 break;

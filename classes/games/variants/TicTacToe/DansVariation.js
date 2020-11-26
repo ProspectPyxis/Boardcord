@@ -9,8 +9,9 @@ class DansVariation extends TicTacToe {
      */
     static get gameData() {
         let dat = super.gameData;
-        dat.aliases = ["dansvariation", "Dans variation", "dans"];
+        dat.isVariant = true;
         dat.variantName = "Dan's Variation";
+        dat.variantAliases = ["dansvariation", "Dans variation", "dans"];
 
         return dat;
     }
