@@ -96,7 +96,7 @@ const init = async () => {
         try {
             var gameVariantFiles = await readdir(`./classes/games/variants/${g.name}/`);
         } catch (e) {
-            bot.logger.log('info', `No variants folder found for ${g.name}, skipping`);
+            bot.logger.log('info', `No variants folder found for ${g.name}, skipping.`);
             continue;
         }
         if (gameVariantFiles.length === 0) continue;

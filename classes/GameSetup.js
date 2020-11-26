@@ -129,23 +129,19 @@ class GameSetup {
                     break;
                 }
 
-                switch (typeof this.options[args[0]]) {
-                    case 'boolean':
-                        this.options[args[0]] = args[1] === 'true' || args[1] == 1;
-                        break;
-                    case 'number':
-                        this.options[args[0]] = Number(args[1]);
-                        break;
-                    case 'string':
-                        args.shift();
-                        this.options[args[0]] = args.join(' ');
-                        break;
-                    case 'object':
-                        // TODO: Make this handle enum cases, since if it's none of the above three it's likely an enum
-                        break;
-                    default:
-                        throw new Error('Error setting game option: unidentified variable');
+                try {
+                    var val = this.game.setOption(args[0], args.slice(1).join(' '));
+                } catch (e) {
+                    this.channel.send(e.message);
                 }
+
+                if (!val) {
+                    this.channel.send("There was an unknown error trying to set the option.");
+                    break;
+                }
+
+                this.option[args[0]] = val;
+                this.channel.send(`Option \`${args[0]}\` has been set to: \`${val}\`.`);
                 this.setupmsg.edit(this.getSetupMessage());
                 break;
 

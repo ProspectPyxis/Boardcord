@@ -47,12 +47,13 @@ class Game {
 
     /**
      * This handles limits for various options, such as clamping numbers, limiting possible strings, etc.
+     * Should throw an error if any occurs.
      *
      * @static
      * @abstract
      * @param {string} option - The name of the option to set.
      * @param {string} value - The value to convert.
-     * @returns {*} - The converted value. Return an error object if an error occurs.
+     * @returns {*} - The converted value. Return null if the option is not found somehow.
      */
     static setOption(option, value) { return; }
 
