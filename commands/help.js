@@ -6,12 +6,14 @@ exports.run = async (bot, message, args) => { // eslint-disable-line no-unused-v
         const commandNames = myCommands.keyArray();
         const sorted = commandNames.sort();
 
-        message.channel.send(`**List of Commands** (use \`help [command]\` for more details on a command):\n\`\`\`${sorted.join(" ")}\`\`\``);
+        message.channel.send(`Here are the list of commands.\nYou may also view the list of commands on the official documentation site: <https://prospectpyxis.github.io/Boardcord/pages/commands.html>\n\`\`\`${sorted.join(" ")}\`\`\``);
     } else {
-        let command = args[0];
-        if (bot.commands.has(command)) {
-            command = bot.commands.get(command);
-            let str = "";
+        let cmd = args[0];
+        if (bot.commands.has(cmd)) {
+            let command = bot.commands.get(cmd);
+            let str = "You may view more details about this command at ";
+
+            str += `<https://prospectpyxis.github.io/Boardcord/pages/commands/${cmd}.html>.\n\`\`\`markdown\n`
 
             str += "# " + command.help.name + " # \n";
             str += command.help.description + "\n";
@@ -19,7 +21,9 @@ exports.run = async (bot, message, args) => { // eslint-disable-line no-unused-v
             str += "- Aliases: " + command.conf.aliases.length === 0 ? "[None]" : command.conf.aliases.join(", ") + "\n";
             if (command.help.examples && command.help.examples.length > 0)
                 str += "- Examples: \n-- " + command.help.examples.join("\n-- ");
-            message.channel.send(str, { code: "markdown" });
+
+            str += "```";
+            message.channel.send(str);
         }
     }
 };
