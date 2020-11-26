@@ -46,6 +46,17 @@ class Game {
     }
 
     /**
+     * This handles limits for various options, such as clamping numbers, limiting possible strings, etc.
+     *
+     * @static
+     * @abstract
+     * @param {string} option - The name of the option to set.
+     * @param {string} value - The value to convert.
+     * @returns {*} - The converted value. Return an error object if an error occurs.
+     */
+    static setOption(option, value) { return; }
+
+    /**
      * @class
      * @param {string} id - The UUID of this game.
      * @param {Discord.Client} bot - The bot instance.
