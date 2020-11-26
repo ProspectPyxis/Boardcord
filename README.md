@@ -18,12 +18,16 @@ This bot requires the following packages at the minimum:
 
 Certain games may require these additional packages:
 - `2d-array-rotation`
+- `chance`
 
 ## Self-hosting
 If you want to host the bot yourself, then you'll first need to install node.js. I won't be getting into the instructions for that here, since it shouldn't be too hard to look up on your own - and if you can't complete this step, then self-hosting may not be the wisest idea anyways, as you may run into many basic issues in the attempt.
 
 Once you have done so, follow these instructions:
-1. Clone this repository to a folder of your choice.
+1. CD into a folder of your choice, then clone the repository by running the following (this command specifically is recommended as to not clone the `gh-pages` branch unnecessarily):
+```
+git clone --single-branch -b master https://github.com/ProspectPyxis/Boardcord.git .
+```
 2. In a terminal, open the folder, and run `npm init`.
 3. Once you have done so, install the required dependencies (see above).
 4. In the `config` folder, edit `global_config_example.js` (see below) to your liking (most importantly, adding your own bot token), then rename the file to `global_config.js`.

@@ -120,6 +120,7 @@ dist
 # Template ends here
 
 .eslintrc.js
+gh-pages/
 
 global_config.js
 data/

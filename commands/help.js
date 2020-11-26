@@ -6,8 +6,7 @@ exports.run = async (bot, message, args) => { // eslint-disable-line no-unused-v
         const commandNames = myCommands.keyArray();
         const sorted = commandNames.sort();
 
-        message.channel.send(`**List of Commands** (use \`help [command]\` for more details on a command):
-        \`\`\`${sorted.join(" ")}\`\`\``);
+        message.channel.send(`**List of Commands** (use \`help [command]\` for more details on a command):\n\`\`\`${sorted.join(" ")}\`\`\``);
     } else {
         let command = args[0];
         if (bot.commands.has(command)) {
