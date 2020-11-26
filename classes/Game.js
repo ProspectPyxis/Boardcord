@@ -8,6 +8,7 @@ class Game {
      * This should be overridden in proper games by calling super.gameData and editing it,
      * rather than rewriting gameData entirely for every game.
      *
+     * @static
      * @returns {object} - The data for this game.
      */
     static get gameData() {
@@ -23,6 +24,34 @@ class Game {
             variantName: "Normal",
             variantAliases: ["none", "null"]
         };
+    }
+
+    /**
+     * Returns whether a string matches this game's name or its variant name, or any aliases.
+     *
+     * @static
+     * @param {string} n - The string to compare.
+     * @param {boolean} byVariant - Whether to compare the string to the normal name/aliases or its variant name/aliases.
+     * @returns {boolean} - Whether the string matches.
+     */
+    static matchName(n, byVariant) {
+        n = n.toLowerCase();
+
+        // Index 0: n without spaces
+        // Index 1: n without symbols (dashes, apostrophes, slashes, quote marks, brackets)
+        // Index 2: n without spaces AND symbols
+        let nv = [
+            n.replace(/ +/g, ""),
+            n.replace(/[/-'""()[\]\\]+/g, ""),
+            n.replace(/[/-'""()[\]\\ ]+/g, "")
+        ];
+
+        for (let i of nv) {
+            if (!byVariant && i == this.gameData.name.toLowerCase() || this.gameData.aliases.some(e => e.toLowerCase() == i)) return true;
+            else if (byVariant && i == this.gameData.variantName.toLowerCase() || this.gameData.variantAliases.some(e => e.toLowerCase() == i)) return true;
+        }
+
+        return false;
     }
 
     /**
