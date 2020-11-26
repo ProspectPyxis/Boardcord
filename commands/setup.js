@@ -18,8 +18,7 @@ exports.run = async (bot, message, args) => { // eslint-disable-line no-unused-v
                     temp.delete({ timeout: 3000 });
                     return;
                 }
-            }
-            else {
+            } else {
                 let temp = await message.channel.send("A game is already running in this channel!");
                 temp.delete({ timeout: 3000 });
                 return;
@@ -36,13 +35,7 @@ exports.run = async (bot, message, args) => { // eslint-disable-line no-unused-v
         }
 
         // Check if game exists
-        let gameIndex = bot.games.findIndex(element => {
-            let g = args.join(' ').toLowerCase();
-            return (
-                element.gameData.name.toLowerCase() === g ||
-                element.gameData.aliases.some(e => e.toLowerCase() === g)
-            );
-        })
+        let gameIndex = bot.games.findIndex(element => element.matchName(args.join(' '), false))
         if (gameIndex === -1)
             return message.channel.send("The game you input could not be found!");
 

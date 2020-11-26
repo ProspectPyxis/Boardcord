@@ -37,7 +37,7 @@ class GameSetup {
         this.players = this.players.concat(toPlay);
         if (this.turnOrder) this.turnOrder = this.players;
         if (game.constructor.gameData.variantName) {
-            this.variant = this.bot.gameVariants[this.game.name].find(e => e.gameData.variantName === game.constructor.gameData.variantName);
+            this.variant = this.bot.gameVariants[this.game.name].find(e => e.matchName(game.constructor.gameData.variantName, true));
         }
         this.options = game.options;
     }
@@ -45,12 +45,7 @@ class GameSetup {
     setVariant(variant) {
         if (this.bot.gameVariants[this.game.name].length === 0) return;
 
-        var vIndex = this.bot.gameVariants[this.game.name].findIndex(element => {
-            return (
-                element.gameData.variantName.toLowerCase() === variant.toLowerCase() ||
-                element.gameData.variantAliases.some(e => e.toLowerCase() === variant.toLowerCase())
-            );
-        })
+        var vIndex = this.bot.gameVariants[this.game.name].findIndex(element => element.matchName(variant, true));
 
         if (vIndex !== -1)
         this.variant = this.bot.gameVariants[this.game.name][vIndex];
@@ -122,8 +117,11 @@ class GameSetup {
 
             case 'option':
             case 'set':
-                if (Object.keys(this.game.gameData.defaultOptions).length === 0 && this.game.gameData.defaultOptions === Object) {
-                    this.channel.send("No custom options are available for this game!");
+                if (
+                    (this.variant && Object.keys(this.variant.gameData.defaultOptions).length === 0 && this.variant.gameData.defaultOptions === Object) ||
+                    (Object.keys(this.game.gameData.defaultOptions).length === 0 && this.game.gameData.defaultOptions === Object)
+                ) {
+                    this.channel.send("No custom options are available for this game or variant!");
                     break;
                 }
                 if (!(args[0] in this.options)) {
@@ -194,25 +192,15 @@ class GameSetup {
                     break;
                 }
 
-                var vName = args.join(' ').toLowerCase();
+                var vName = args.join(' ');
 
                 // This being null indicates resetting to default variant
                 var variantTo = null;
 
-                var variantIndex = this.bot.gameVariants[this.game.name].findIndex(element => {
-                    let g = args.join(' ').toLowerCase();
-
-                    return (
-                        element.gameData.variantName.toLowerCase() === g ||
-                        element.gameData.variantAliases.some(e => e.toLowerCase() === g)
-                    );
-                })
+                var variantIndex = this.bot.gameVariants[this.game.name].findIndex(element => element.matchName(vName, true))
 
                 if (vName) {
-                    if (
-                        !(vName == this.game.gameData.variantName.toLowerCase() || this.game.gameData.variantAliases.some(e => e.toLowerCase() == vName)) &&
-                        variantIndex === -1
-                    ) {
+                    if (!this.game.matchName(vName, false) && variantIndex === -1) {
                         this.channel.send("The variant you input could not be found!");
                         break;
                     }
