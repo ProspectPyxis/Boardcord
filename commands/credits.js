@@ -1,5 +1,5 @@
 exports.run = async (bot, message, args) => { // eslint-disable-line no-unused-vars
-    message.channel.send("**Bot Credits:**\n\n**ProspectPyxis** - bot concept and coder\n**Jae** - bot icon (https://instagram.com/generaljae_)\n\nAll games belong to their respective owners (or lack thereof) - I just created the Discord implementation.");
+    message.channel.send("Bot credits are now hosted here: https://prospectpyxis.github.io/Boardcord/pages/misc/credits.html");
 };
 
 exports.conf = {
