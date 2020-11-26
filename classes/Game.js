@@ -18,7 +18,10 @@ class Game {
             maxPlayers: 1,
             turnOrder: false,
             defaultOptions: {},
-            variantName: null
+            variants: [],
+            isVariant: false,
+            variantName: "Normal",
+            variantAliases: ["none", "null"]
         };
     }
 
@@ -63,11 +66,11 @@ class Game {
      */
     async init() {
         var countdown = await this.channel.send(":warning: The game begins in **3**...");
-        await this.bot.wait(1000);
+        await this.bot.utils.wait(1000);
         countdown.edit(":warning: The game begins in **2**...");
-        await this.bot.wait(1000);
+        await this.bot.utils.wait(1000);
         countdown.edit(":warning: The game begins in **1**...");
-        await this.bot.wait(1000);
+        await this.bot.utils.wait(1000);
         countdown.delete();
         this.gamemsg = await this.channel.send(this.getGameMessage());
         this.logmsg = await this.channel.send(this.getLog());

@@ -31,10 +31,20 @@ module.exports = (bot) => {
         return bot.getConfig(server).prefix;
     }
 
-    bot.wait = async (ms) => {
+    // Util functions
+
+    bot.utils = {};
+
+    bot.utils.wait = async (ms) => {
         return new Promise(resolve => {
             setTimeout(resolve, ms);
         });
+    }
+
+    bot.utils.objectsHaveSameKeys = (...objects) => {
+        const allKeys = objects.reduce((keys, object) => keys.concat(Object.keys(object)), []);
+        const union = new Set(allKeys);
+        return objects.every(object => union.size === Object.keys(object).length);
     }
 
 }

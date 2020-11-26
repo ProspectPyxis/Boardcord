@@ -15,7 +15,7 @@ const bot = new Discord.Client();
 
 bot.config = config;
 
-require("./common/bot_functions.js")(bot);
+require("./common/functions.js")(bot);
 
 bot.commands = new Enmap();
 bot.aliases = new Enmap();
