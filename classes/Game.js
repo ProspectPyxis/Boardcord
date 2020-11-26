@@ -35,23 +35,14 @@ class Game {
      * @returns {boolean} - Whether the string matches.
      */
     static matchName(n, byVariant) {
-        n = n.toLowerCase();
+        n = n.toLowerCase().replace(/[/\-'""()[\]\\ ]+/g, "");
 
-        // Index 0: n without spaces
-        // Index 1: n without symbols (dashes, apostrophes, slashes, quote marks, brackets)
-        // Index 2: n without spaces AND symbols
-        let nv = [
-            n.replace(/ +/g, ""),
-            n.replace(/[/-'""()[\]\\]+/g, ""),
-            n.replace(/[/-'""()[\]\\ ]+/g, "")
-        ];
-
-        for (let i of nv) {
-            if (!byVariant && i == this.gameData.name.toLowerCase() || this.gameData.aliases.some(e => e.toLowerCase() == i)) return true;
-            else if (byVariant && i == this.gameData.variantName.toLowerCase() || this.gameData.variantAliases.some(e => e.toLowerCase() == i)) return true;
-        }
-
-        return false;
+        if (!byVariant)
+            return this.gameData.name.toLowerCase().replace(/[/\-'""()[\]\\ ]+/g, "") == n ||
+                this.gameData.aliases.some(e => e.toLowerCase().replace(/[/\-'""()[\]\\ ]+/g, "") == n);
+        else
+            return this.gameData.variantName.toLowerCase().replace(/[/\-'""()[\]\\ ]+/g, "") == n ||
+                this.gameData.variantAliases.some(e => e.toLowerCase().replace(/[/\-'""()[\]\\ ]+/g, "") == n);
     }
 
     /**
@@ -182,7 +173,7 @@ class Game {
      * @param {Discord.Collection<Discord.Snowflake,Discord.Message>} collected - The collection of messages to process.
      * @abstract
      */
-    async onMessage(collected) { }
+    async onMessage(collected) {}
 
     async resend() {
         await this.gamemsg.delete();
