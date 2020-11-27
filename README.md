@@ -36,7 +36,7 @@ $ git clone --single-branch -b master https://github.com/ProspectPyxis/Boardcord
 ```
 2. In a terminal, open the folder, and run `npm init`.
 3. Once you have done so, install the required dependencies (see above).
-4. In the `config` folder, edit `global_config_example.js` (see below) to your liking (most importantly, adding your own bot token), then rename the file to `global_config.js`.
+4. In the `config` folder, edit `global_config.js.example` (see below) to your liking (most importantly, adding your own bot token), then rename the file to `global_config.js`.
 
 After that, you should be ready to run the bot! Just run the command `node index.js` (or `node .` if you want to be fancy) and the bot should be up and running.
 
