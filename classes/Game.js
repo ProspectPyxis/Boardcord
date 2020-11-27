@@ -90,19 +90,15 @@ class Game {
     }
 
     /**
-     * This should return an array with two elements.
+     * This should return a 2D array, with each sub-array with two elements.
      * Element 0 is a human-readable option name, element 1 should be the formatted value.
-     * Just return super for any invalid values.
      *
      * @static
      * @abstract
-     * @param {string} option - The option to display.
-     * @param {*} value - The set value of said option.
-     * @returns {string[]} - The formatted string.
+     * @param {object} options - The options list.
+     * @returns {string[][]} - The formatted string.
      */
-    static getReadableOption(option, value) {
-        return [option, value];
-    }
+    static getReadableOptions(options) { }
 
     /**
      * @class

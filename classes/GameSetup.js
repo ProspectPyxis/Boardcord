@@ -84,9 +84,9 @@ class GameSetup {
 
         if (Object.keys(this.options).length !== 0 || this.options.constructor !== Object) {
             str += "\n\n**Game Options:**\n";
-            for (const k in this.options) {
-                const readable = this.game.getReadableOption(k, this.options[k]);
-                str += `> ${readable[0]} - *${readable[1]}*\n`
+            const readable = this.game.getReadableOptions(this.options);
+            for (const k of readable) {
+                str += `> ${k[0]} - *${k[1]}*\n`
             }
             str += `\n(You may see details on each game option at <https://prospectpyxis.github.io/Boardcord/pages/games/${this.game.name}.html>)\n`;
         } else {
