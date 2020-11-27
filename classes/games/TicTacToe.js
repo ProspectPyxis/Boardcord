@@ -203,7 +203,7 @@ class TicTacToe extends Game {
             await this.addLog("No more moves available! The game ended in a <draw>.");
             await this.channel.send("**Game over!** This game ended in a **draw.**");
         } else {
-            await this.addLog(`Game over! The winner is: <${this.winner.username}>!`);
+            await this.addLog(`+ Game over! The winner is: <${this.winner.username}>!`);
             await this.channel.send(`**Game over!** The winner is: **${this.winner}!**`);
         }
         await this.gamemsg.edit(this.getGameMessage());

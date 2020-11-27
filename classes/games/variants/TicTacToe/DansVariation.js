@@ -55,7 +55,7 @@ class DansVariation extends TicTacToe {
         }
 
         await Promise.allSettled([
-            this.addLog(`Tiles [${blockedL.slice(0, -1).join('], [') + '] and [' + blockedL.slice(-1)}] have been blocked!`),
+            this.addLog(`- Tiles [${blockedL.slice(0, -1).join('], [') + '] and [' + blockedL.slice(-1)}] have been blocked!`),
             this.gamemsg.edit(this.getGameMessage())
         ]);
     }

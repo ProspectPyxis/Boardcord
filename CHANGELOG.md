@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 - Variant handler in `setup` command.
 - New Tic-tac-toe variant: Dan's Variation.
+- New game: Connect Four
 - New utility functions in Game to simplify code: `matchName`, `setOption`.
 
 ## [0.2.0] - 2020-11-24

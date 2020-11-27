@@ -184,8 +184,13 @@ class Game {
     getLog() {
         let str = "*Game log:*\n```diff\n"
         if (this.log.length === 0) str += "Currently empty.";
-        else str += "+ ";
-        str += this.log.slice(Math.max(this.log.length - 5, 0)).join("\n+ ");
+        else {
+            const latestLog = this.log.slice(Math.max(this.log.length - 5, 0));
+            for (const i of latestLog) {
+                if (i.indexOf("+ ") !== 0 && i.indexOf("- ") !== 0) str += "* "
+                str += i + "\n";
+            }
+        }
         str += "```"
 
         return str;
