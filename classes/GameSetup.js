@@ -85,7 +85,8 @@ class GameSetup {
         if (Object.keys(this.options).length !== 0 || this.options.constructor !== Object) {
             str += "\n\n**Game Options:**\n";
             for (const k in this.options) {
-                str += `> ${this.game.getReadableOption}\n`;
+                const readable = this.game.getReadableOption(k, this.options[k]);
+                str += `> ${readable[0]} - *${readable[1]}*\n`
             }
             str += `\n*(You may see details on each game option at <https://prospectpyxis.github.io/Boardcord/pages/games/${this.game.name}.html>)*\n`;
         } else {
@@ -123,7 +124,7 @@ class GameSetup {
             case 'set':
                 if (
                     (this.variant && Object.keys(this.variant.gameData.defaultOptions).length === 0 && this.variant.gameData.defaultOptions === Object) ||
-                    (Object.keys(this.game.gameData.defaultOptions).length === 0 && this.game.gameData.defaultOptions === Object)
+                    (!this.variant && Object.keys(this.game.gameData.defaultOptions).length === 0 && this.game.gameData.defaultOptions === Object)
                 ) {
                     this.channel.send("No custom options are available for this game or variant!");
                     break;
@@ -174,7 +175,7 @@ class GameSetup {
                     // OPTIMIZE: There's probably a more efficient/cleaner way to do this?
                     var pos = parseInt(args[0]);
                     if (!pos || pos - 1 < 0 || pos - 1 > this.players.length) {
-                        this.channel.send(`Position ${args[0]} is undefined! Did you order your arguments correctly?`);
+                        this.channel.send(`Position ${pos + 1} is undefined! Did you order your arguments correctly?`);
                         break;
                     }
 

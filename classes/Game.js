@@ -19,6 +19,7 @@ class Game {
             minPlayers: 1,
             maxPlayers: 1,
             turnOrder: false,
+            // Each option should always be all lowercase
             defaultOptions: {},
             variants: [],
             isVariant: false,
@@ -91,18 +92,18 @@ class Game {
     }
 
     /**
-     * This should return a one-line string separated by a dash.
-     * Before the dash is a human-readable option name, after the dash should be the formatted value.
+     * This should return an array with two elements.
+     * Element 0 is a human-readable option name, element 1 should be the formatted value.
      * Just return super for any invalid values.
      *
      * @static
      * @abstract
      * @param {string} option - The option to display.
      * @param {*} value - The set value of said option.
-     * @returns {string} - The formatted string.
+     * @returns {string[]} - The formatted string.
      */
     static getReadableOption(option, value) {
-        return `${option} - *${value}*`;
+        return [option, value];
     }
 
     /**
