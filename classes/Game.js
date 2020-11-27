@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 const { nanoid } = require('nanoid');
 const GameSetup = require('./GameSetup.js');
+const numberWords = require('number-words');
 
 class Game {
 
@@ -35,14 +36,26 @@ class Game {
      * @returns {boolean} - Whether the string matches.
      */
     static matchName(n, byVariant) {
-        n = n.toLowerCase().replace(/[/\-'""()[\]\\ ]+/g, "");
+        let cleanString = str => {
+            str = str.replace(/[/\-,.'""()[\]\\ ]+/g, '');
+            str = str.replace(/[0-9]+/g, (match, offset, string) => {
+                return numberWords.convert(parseInt(match)).replace(/ +/g, '');
+            });
+            str = str.toLowerCase();
+
+            return str;
+        }
+
+        n = cleanString(n);
+
+        console.log('Debug: ' + n);
 
         if (!byVariant)
-            return this.gameData.name.toLowerCase().replace(/[/\-'""()[\]\\ ]+/g, "") == n ||
-                this.gameData.aliases.some(e => e.toLowerCase().replace(/[/\-'""()[\]\\ ]+/g, "") == n);
+            return cleanString(this.gameData.name) == n ||
+                this.gameData.aliases.some(e => cleanString(e) == n);
         else
-            return this.gameData.variantName.toLowerCase().replace(/[/\-'""()[\]\\ ]+/g, "") == n ||
-                this.gameData.variantAliases.some(e => e.toLowerCase().replace(/[/\-'""()[\]\\ ]+/g, "") == n);
+            return cleanString(this.gameData.variantName) == n ||
+                this.gameData.variantAliases.some(e => cleanString(e) == n);
     }
 
     /**
