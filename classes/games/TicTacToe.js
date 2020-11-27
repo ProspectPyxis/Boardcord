@@ -3,8 +3,6 @@ const rotate90 = require('2d-array-rotation').rotate90;
 
 class TicTacToe extends Game {
 
-    // TODO: Refactor this to allow for easily expanding with variants like multi-move, more players, etc.
-
     /**
      * @override
      */
