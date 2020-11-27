@@ -160,7 +160,7 @@ class TicTacToe extends Game {
         if (collected.first().content == this.bot.getPrefix(this.guild) + "game abort")
             return;
 
-        const inputs = collected.first().content.split(/ +/g);
+        const inputs = collected.first().content.toLowerCase().split(/ +/g);
         var positions = [];
 
         for (let i of inputs) {
