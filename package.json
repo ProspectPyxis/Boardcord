@@ -28,6 +28,7 @@
     "logform": "^2.2.0",
     "nanoid": "^3.1.18",
     "node-gyp": "^7.1.2",
+    "number-words": "^1.1.1",
     "winston": "^3.3.3"
   },
   "devDependencies": {

@@ -19,6 +19,7 @@ This bot requires the following packages at the minimum:
 - `winston` and `logform`
 - `nanoid`
 - `knuth-shuffle`
+- `number-words`
 
 Certain games may require these additional packages:
 - `2d-array-rotation`
