@@ -76,7 +76,7 @@ class GameSetup {
             else str += this.turnOrder.join(", ");
         }
 
-        if (this.bot.gameVariants[this.game.name].length > 0) {
+        if (this.bot.gameVariants[this.game.name] && this.bot.gameVariants[this.game.name].length > 0) {
             str += "\n\n**Variant selected:**\n";
             if (!this.variant) str += "Normal";
             else str += this.variant.gameData.variantName;
@@ -88,7 +88,7 @@ class GameSetup {
                 const readable = this.game.getReadableOption(k, this.options[k]);
                 str += `> ${readable[0]} - *${readable[1]}*\n`
             }
-            str += `\n*(You may see details on each game option at <https://prospectpyxis.github.io/Boardcord/pages/games/${this.game.name}.html>)*\n`;
+            str += `\n(You may see details on each game option at <https://prospectpyxis.github.io/Boardcord/pages/games/${this.game.name}.html>)\n`;
         } else {
             str += "\n\nThis game has no custom rules available.\n"
         }

@@ -50,8 +50,6 @@ class Game {
 
         n = cleanString(n);
 
-        console.log('Debug: ' + n);
-
         if (!byVariant)
             return cleanString(this.gameData.name) == n ||
                 this.gameData.aliases.some(e => cleanString(e) == n);
