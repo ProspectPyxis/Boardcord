@@ -83,12 +83,16 @@ class GameSetup {
         }
 
         if (Object.keys(this.options).length !== 0 || this.options.constructor !== Object) {
-            // TODO: Refactor this for later games with custom rulesetss
+            str += "\n\n**Game Options:**\n";
+            for (const k in this.options) {
+                str += `> ${this.game.getReadableOption}\n`;
+            }
+            str += `\n*(You may see details on each game option at <https://prospectpyxis.github.io/Boardcord/pages/games/${this.game.name}.html>)*\n`;
         } else {
-            str += "\n\nThis game has no custom rules available."
+            str += "\n\nThis game has no custom rules available.\n"
         }
 
-        str += `\n\n*Once you are ready, run the command \`${this.bot.getPrefix(this.guild)}setup start\` to start the game.*`;
+        str += `\n*Once you are ready, run the command \`${this.bot.getPrefix(this.guild)}setup start\` to start the game.*`;
         str += `\n*To cancel this setup, run the command \`${this.bot.getPrefix(this.guild)}setup cancel\`.*`;
         str += `\n*Setup times out automatically 120 seconds after the last command.*`
 
@@ -124,13 +128,13 @@ class GameSetup {
                     this.channel.send("No custom options are available for this game or variant!");
                     break;
                 }
-                if (!(args[0] in this.options)) {
+                if (!(args[0].toLowerCase() in this.options)) {
                     this.channel.send(`The game option \`${args[0]} was not found for this game!`);
                     break;
                 }
 
                 try {
-                    var val = this.game.setOption(args[0], args.slice(1).join(' '));
+                    var val = this.game.setOption(args[0].toLowerCase(), args.slice(1).join(' '));
                 } catch (e) {
                     this.channel.send(e.message);
                 }
@@ -140,7 +144,7 @@ class GameSetup {
                     break;
                 }
 
-                this.option[args[0]] = val;
+                this.option[args[0].toLowerCase()] = val;
                 this.channel.send(`Option \`${args[0]}\` has been set to: \`${val}\`.`);
                 this.setupmsg.edit(this.getSetupMessage());
                 break;

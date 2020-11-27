@@ -23,7 +23,8 @@ class Game {
             variants: [],
             isVariant: false,
             variantName: "Normal",
-            variantAliases: ["none", "null"]
+            variantAliases: ["none", "null"],
+            canSelect: true // Set to false for template games, games in beta, etc.
         };
     }
 
@@ -66,9 +67,10 @@ class Game {
      * @static
      * @param {string} option - The name of the option to set.
      * @param {string} value - The value to convert.
+     * @param {object} options - The options already set, if any.
      * @returns {*} - The converted value. Return null if any non-fatal error occurs.
      */
-    static setOption(option, value) {
+    static setOption(option, value, options) {
         if (!this.gameData.defaultOptions[option]) return null;
 
         switch (typeof this.gameData.defaultOptions[option]) {
@@ -86,6 +88,21 @@ class Game {
             default:
                 return null;
         }
+    }
+
+    /**
+     * This should return a one-line string separated by a dash.
+     * Before the dash is a human-readable option name, after the dash should be the formatted value.
+     * Just return super for any invalid values.
+     *
+     * @static
+     * @abstract
+     * @param {string} option - The option to display.
+     * @param {*} value - The set value of said option.
+     * @returns {string} - The formatted string.
+     */
+    static getReadableOption(option, value) {
+        return `${option} - *${value}*`;
     }
 
     /**
