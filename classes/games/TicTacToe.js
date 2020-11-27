@@ -132,7 +132,8 @@ class TicTacToe extends Game {
         clearTimeout(timer);
         await this.onMessage(collected);
 
-        if (!this.winner && !this.aborted) this.gameLoop();
+        if (this.winner) this.finishGame();
+        else if (!this.aborted) this.gameLoop();
     }
 
     /**
@@ -187,10 +188,7 @@ class TicTacToe extends Game {
 
         await this.addLog(`[${this.players[this.currentPlayer].username}] placed marker [${this.markers[this.currentPlayer][1]}] at ${str}.`);
         this.winner = this.checkWinner();
-        if (this.winner) {
-            this.finishGame();
-            return;
-        }
+        if (this.winner) return;
         this.currentPlayer = (this.currentPlayer + 1) % this.players.length;
         await this.gamemsg.edit(this.getGameMessage());
     }
@@ -200,7 +198,7 @@ class TicTacToe extends Game {
      */
     async finishGame() {
         if (this.winner === "draw") {
-            await this.addLog("No more moves available! The game ended in a <draw>.");
+            await this.addLog("+ No more moves available! The game ended in a <draw>.");
             await this.channel.send("**Game over!** This game ended in a **draw.**");
         } else {
             await this.addLog(`+ Game over! The winner is: <${this.winner.username}>!`);
