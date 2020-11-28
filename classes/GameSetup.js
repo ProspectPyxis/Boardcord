@@ -21,6 +21,8 @@ class GameSetup {
         this.guild = triggermsg.guild;
         this.name = game.gameData.name;
 
+        this.public = false;
+
         this.players = [triggermsg.author];
         this.gm = triggermsg.author;
 
@@ -68,7 +70,9 @@ class GameSetup {
     getSetupMessage() {
         let str = "";
 
-        str += "**Setting up game:** " + this.name + "\n" + "**Host:** " + this.gm.tag + "\n--------------------\n";
+        str += "**Setting up game:** " + this.name + "\n" + "**Host:** " + this.gm.tag + "\n";
+        str += this.public ? "**Public game** - anyone can join" : "**Private game** - players must be invited";
+        str += "\n--------------------\n";
 
         str += "**Players:**\n";
         str += this.players.join(" ");
@@ -108,7 +112,17 @@ class GameSetup {
         let cmd = args.shift();
 
         switch (cmd) {
+            case 'access':
+                this.public = !this.public;
+                if (this.public) this.channel.send("The game is now **public** - anyone may join the game.");
+                else this.channel.send("The game is now **private** - you must invite users to let them join.");
+                break;
+
             case 'invite':
+                if (this.public) {
+                    this.channel.send("The game is public - inviting people is unnecessary!");
+                    break;
+                }
                 if (this.players.length === this.game.gameData.maxPlayers) {
                     this.channel.send(`You've already hit the player limit for this game! (Player limit: ${this.game.gameData.maxPlayers})`);
                     break;
@@ -122,6 +136,22 @@ class GameSetup {
                     this.inviteUser(i[1].user);
                 }
                 this.channel.send('Users have been invited! The relevant user(s) must type "accept" to join the game within 30 seconds.');
+                break;
+
+            case 'join':
+                if (!this.public) {
+                    this.channel.send("The game is private - the host must invite you first!");
+                    break;
+                }
+                if (this.players.length === this.game.gameData.maxPlayers) {
+                    this.channel.send(`The player limit for this game has already been reached! (Player limit: ${this.game.gameData.maxPlayers})`);
+                    break;
+                }
+
+                this.players.push(msg.author);
+                if (this.turnOrder) this.turnOrder.push(msg.author);
+                this.channel.send(`${msg.author} has joined the game!`);
+
                 break;
 
             case 'option':
