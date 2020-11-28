@@ -17,7 +17,6 @@ class ConnectFour extends Game {
         dat.turnOrder = true;
 
         dat.defaultOptions.popout = false;
-        dat.defaultOptions.turnlimit = -1;
 
         return dat;
     }
@@ -26,14 +25,7 @@ class ConnectFour extends Game {
      * @override
      */
     static setOption(option, value, options) {
-        if (option == "turnlimit") {
-            if (!options.popout) throw new Error("Turn limit cannot be set for a non-popout game!");
-
-            let i = parseInt(value);
-            if (i < 42) throw new Error("Turn limit must be 42 minimum, or -1 for unlimited turns!");
-            else return i;
-        }
-        else if (option == "popout") {
+        if (option == "popout") {
             if (value == "true" || value == "on") return true;
             else if (value == "false" || value == "off") return false;
             else throw new Error("Boolean value must be `true` or `false`!");
@@ -48,10 +40,6 @@ class ConnectFour extends Game {
         for (let option in options) {
             let value = options[option];
             switch (option) {
-                case 'turnlimit':
-                    arr.push(["Turn Limit", value == -1 ? (options.popout ? "Unlimited" : "Until Board Filled") : value]);
-                    break;
-
                 case 'popout':
                     arr.push(["Popout Rule", value ? "On" : "Off"]);
                     break;
@@ -84,8 +72,6 @@ class ConnectFour extends Game {
         this.boardWidth = 7;
         this.boardHeight = 6;
 
-        this.turn = 1;
-
         // This is named kVal based off of the m,n,k-game concept
         // Basically how many is needed in a row to win
         this.kVal = 4;
@@ -109,8 +95,6 @@ class ConnectFour extends Game {
         let str = "";
         str += `**Now playing:** ${this.constructor.gameData.name}${this.constructor.gameData.isVariant ? ", " + this.constructor.gameData.variantName : ""}\n\n`;
 
-        str += `**Turn:** ${this.turn}${this.popout ? "/" + this.options.turnlimit : ''}\n\n`;
-
         str += "**Board:**\n"
         str += this.getBoard();
 
@@ -131,7 +115,7 @@ class ConnectFour extends Game {
             }
         } else {
             str += "\n**The game is over!**"
-            if (this.winner === "draw" || this.winner === "turnlimit") str += "\nThe game ended in a **draw.**";
+            if (this.winner === "draw") str += "\nThe game ended in a **draw.**";
             else str += `\nThe winner is: **${this.winner}!**`
         }
 
@@ -196,11 +180,6 @@ class ConnectFour extends Game {
                 this.channel.send(`Player **${this.players[this.currentPlayer].username}** has timed out - skipping to next player.`),
                 this.addLog(`[${this.players[this.currentPlayer].username}] timed out - skipping turn.`)
             ]);
-            if (this.turn === this.options.turnlimit) {
-                this.winner = "turnlimit";
-                return;
-            }
-            this.turn++;
             this.currentPlayer = (this.currentPlayer + 1) % this.players.length;
             await this.gamemsg.edit(this.getGameMessage());
             this.gameLoop();
@@ -258,13 +237,8 @@ class ConnectFour extends Game {
 
         this.winner = this.checkWinner();
         if (this.winner) return;
-        if (isPop && this.turn === this.options.turnlimit) {
-            this.winner = "turnlimit";
-            return;
-        }
 
         this.currentPlayer = (this.currentPlayer + 1) % this.players.length;
-        this.turn++;
         await this.gamemsg.edit(this.getGameMessage());
     }
 
@@ -275,9 +249,6 @@ class ConnectFour extends Game {
         if (this.winner === "draw") {
             logToAdd = "+ No more moves available! The game ended in a <draw>.";
             gameOverMsg = "**Game over!** This game ended in a **draw.**";
-        } else if (this.winner === "turnlimit") {
-            logToAdd = "+ Turn limit reached! The game ended in a <draw>.";
-            gameOverMsg = "**Turn limit reached - game over!** This game ended in a **draw.**";
         } else if (this.winner === "bothwin") {
             logToAdd = `+ Both players have ${numberWords.convert(this.kVal)}-in-a-row! The game ended in a <draw>.`;
             gameOverMsg = `**Both players have ${numberWords.convert(this.kVal)}-in-a-row - game over!** The game ended in a <draw>.`;
