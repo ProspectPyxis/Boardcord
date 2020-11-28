@@ -47,7 +47,7 @@ class TicTacToe extends Game {
      */
     getGameMessage() {
         let str = "";
-        str += `**Now playing:** ${this.constructor.gameData.name}${this.constructor.gameData.variantName ? ", " + this.constructor.gameData.variantName : ""}\n\n`;
+        str += `**Now playing:** ${this.constructor.gameData.name}${this.constructor.gameData.isVariant ? ", " + this.constructor.gameData.variantName : ""}\n\n`;
         str += "**Board:**"
         str += this.getBoard();
 
