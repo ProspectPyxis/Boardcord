@@ -71,6 +71,7 @@ class ConnectFour extends Game {
         ];
         this.boardWidth = 7;
         this.boardHeight = 6;
+        this.boardOffset = 1;
 
         // This is named kVal based off of the m,n,k-game concept
         // Basically how many is needed in a row to win
@@ -225,7 +226,7 @@ class ConnectFour extends Game {
 
         let isPop = this.options.popout && collected.first().content.toLowerCase().indexOf("pop ") === 0;
 
-        let col = parseInt(isPop ? collected.first().content.slice(4) : collected.first().content) - 1;
+        let col = parseInt(isPop ? collected.first().content.slice(4) : collected.first().content) - this.boardOffset;
 
         if (this.board[col].length >= this.boardHeight) {
             let err = await this.channel.send("That column is already full! Please try a different column.");
@@ -241,10 +242,10 @@ class ConnectFour extends Game {
         collected.first().delete();
         if (!isPop) {
             this.board[col].push(this.currentPlayer + 1);
-            await this.addLog(`[${this.players[this.currentPlayer].username}] has put their marker in column [${col + 1}].`);
+            await this.addLog(`[${this.players[this.currentPlayer].username}] has put their marker in column [${col + this.boardOffset}].`);
         } else {
             this.board[col].shift();
-            await this.addLog(`[${this.players[this.currentPlayer].username}] has popped a marker out of column [${col + 1}].`);
+            await this.addLog(`[${this.players[this.currentPlayer].username}] has popped a marker out of column [${col + this.boardOffset}].`);
         }
 
         this.winner = this.checkWinner();

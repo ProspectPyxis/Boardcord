@@ -18,6 +18,11 @@ class FiveInARow extends ConnectFour {
 
         this.kVal = 5;
 
+        this.boardOffset = 0;
+
+        this.board.unshift([2, 1, 2, 1, 2, 1]);
+        this.board.push([1, 2, 1, 2, 1, 2]);
+
         // Markers have a third element
         // Element 2 is for when the piece is at the edges of the board
         this.markers = [
@@ -41,16 +46,16 @@ class FiveInARow extends ConnectFour {
                     str += this.markers[-j - 1][1];
                 } else {
                     if (j === 0 || j === i.length - 1) {
-                        str += this.markers[j - 1][2];
+                        str += this.markers[i[j] - 1][2];
                     } else {
-                        str += this.markers[j - 1][0];
+                        str += this.markers[i[j] - 1][0];
                     }
                 }
                 str += ' ';
             }
             str += "\n";
         }
-        str += "> :x: :one: :two: :three: :four: :five: :six: :seven: :x:";
+        str += "> :eight_spoked_asterisk: :one: :two: :three: :four: :five: :six: :seven: :eight_spoked_asterisk:";
 
         return str;
     }
