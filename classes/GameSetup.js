@@ -85,7 +85,7 @@ class GameSetup {
 
         if (this.bot.gameVariants[this.game.name] && this.bot.gameVariants[this.game.name].length > 0) {
             str += "\n\n**Variant selected:**\n";
-            if (!this.variant) str += "Normal";
+            if (!this.variant) str += this.game.gameData.variantName;
             else str += this.variant.gameData.variantName;
         }
 
@@ -98,7 +98,7 @@ class GameSetup {
             }
             str += `\n(You may see details on each game option at <https://prospectpyxis.github.io/Boardcord/pages/games/${this.game.name}.html>)\n`;
         } else {
-            str += "\n\nThis game has no custom rules available.\n"
+            str += "\n\nThis game has no options available.\n"
         }
 
         str += `\n*Once you are ready, run the command \`${this.bot.getPrefix(this.guild)}setup start\` to start the game.*`;
