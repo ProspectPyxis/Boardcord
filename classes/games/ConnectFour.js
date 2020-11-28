@@ -219,8 +219,10 @@ class ConnectFour extends Game {
 
     /** @override */
     async onMessage(collected) {
-        if (collected.first().content == this.bot.getPrefix(this.guild) + "game abort")
-            return "abort";
+        if (collected.first().content.toLowerCase() == this.bot.getPrefix(this.guild) + "game abort") {
+            let x = await this.abortGame(collected.first().author);
+            return x;
+        }
 
         this.timeouts = 0;
 

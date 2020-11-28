@@ -251,27 +251,18 @@ class Game {
     finishGame() {}
 
     async abortGame(sender) {
-        if (this.abort.includes(sender.id)) {
-            let temp = await this.channel.send("You've already submitted an abort request to the game!");
-            temp.delete({ timeout: 3000 });
-            return;
-        }
+        const limit = this.players.length === 2 ? 2 : Math.ceil(this.players.length / 2);
 
-        if (this.players.length === 2) {
-            this.channel.send(`**${sender} has aborted the game.**`);
-            this.aborted = true;
-            await Promise.allSettled([
-                this.addLog("- The game has been aborted. <No contest>."),
-                this.gamemsg.edit(this.getGameMessage())
-            ]);
-            this.gameEnd();
+        if (this.abort.includes(sender.id)) {
+            this.abort = this.abort.filter(e => e.id != sender.id);
+            this.channel.send(`**${sender} has retracted their abort vote.**\nThere is now ${this.abort.length}/${Math.ceil(this.players.length / 2)} vote(s) to abort the game.`);
             return;
         }
 
         this.abort.push(sender.id);
 
-        let str = `**${sender} has voted to abort the game.**\nThere is now ${this.abort.length}/${Math.ceil(this.players.length / 2)} vote(s) to abort the game.`
-        if (this.abort.length >= this.players.length / 2) {
+        let str = `**${sender} has voted to abort the game.**\nThere is now ${this.abort.length}/${limit} vote(s) to abort the game.`
+        if (this.abort.length >= limit) {
             str += "\n**Amount of required votes reached! The game has been aborted.**";
             this.aborted = true;
             await Promise.allSettled([
@@ -279,8 +270,7 @@ class Game {
                 this.gamemsg.edit(this.getGameMessage())
             ]);
             this.gameEnd();
-        } else {
-            this.gameLoop();
+            return "abort";
         }
         this.channel.send(str);
     }

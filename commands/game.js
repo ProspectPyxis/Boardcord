@@ -12,7 +12,8 @@ exports.run = async (bot, message, args) => { // eslint-disable-line no-unused-v
             return;
         }
         if (args[0] === "abort") {
-            bot.activeGames[message.guild.id][message.channel.id].abortGame(message.author);
+            // This actually doesn't do anything, the command should be detected and handled by the game's gameLoop method directly
+            // bot.activeGames[message.guild.id][message.channel.id].abortGame(message.author);
             return;
         }
         if (args[0] === "docs") {
