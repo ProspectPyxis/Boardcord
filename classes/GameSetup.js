@@ -116,6 +116,7 @@ class GameSetup {
                 this.public = !this.public;
                 if (this.public) this.channel.send("The game is now **public** - anyone may join the game.");
                 else this.channel.send("The game is now **private** - you must invite users to let them join.");
+                this.setupmsg.edit(this.getSetupMessage());
                 break;
 
             case 'invite':
@@ -151,6 +152,7 @@ class GameSetup {
                 this.players.push(msg.author);
                 if (this.turnOrder) this.turnOrder.push(msg.author);
                 this.channel.send(`${msg.author} has joined the game!`);
+                this.setupmsg.edit(this.getSetupMessage());
 
                 break;
 

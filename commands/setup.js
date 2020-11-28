@@ -3,12 +3,17 @@ exports.run = async (bot, message, args) => { // eslint-disable-line no-unused-v
     if (bot.activeGames[message.guild.id] && bot.activeGames[message.guild.id][message.channel.id]) {
         // bot.logger.log('debug', bot.activeGames[message.guild.id][message.channel.id] instanceof Game);
         if (bot.activeGames[message.guild.id][message.channel.id] instanceof GameSetup) {
-            if (args[0].match(/^(join|leave|resend)$/i) && !bot.activeGames[message.guild.id][message.channel.id].players.some(e => e.id == message.author.id))
+
+            if (/^(leave|resend)$/i.test(args[0]) && !bot.activeGames[message.guild.id][message.channel.id].players.some(e => e.id == message.author.id))
                 return message.channel.send(`${message.author} You must be in the game to make changes to it!`);
-            if (bot.activeGames[message.guild.id][message.channel.id].gm.id !== message.author.id)
+
+            if (/^(join)$/i.test(args[0]) && bot.activeGames[message.guild.id][message.channel.id].players.some(e => e.id == message.author.id))
+                return message.channel.send(`${message.author} You are already in the game!`);
+
+            if (!(/^(join|leave|resend)$/i.test(args[0])) && bot.activeGames[message.guild.id][message.channel.id].gm.id !== message.author.id)
                 return message.channel.send(`${message.author} Only the host of the game may set it up!`);
-            else
-                bot.activeGames[message.guild.id][message.channel.id].interpretCommand(message, args);
+
+            bot.activeGames[message.guild.id][message.channel.id].interpretCommand(message, args);
         } else { // Implicit assumption that if it's not GameSetup then it must be an instance of Game
             if (args[0] === 'redo') {
                 if (bot.activeGames[message.guild.id][message.channel.id].timeout)
