@@ -197,18 +197,28 @@ class TicTacToe extends Game {
      * @override
      */
     async finishGame() {
+        let logToAdd = '';
+        let gameOverMsg = '';
         if (this.winner === "draw") {
-            await this.addLog("+ No more moves available! The game ended in a <draw>.");
-            await this.channel.send("**Game over!** This game ended in a **draw.**");
+            logToAdd = "+ No more moves available! The game ended in a <draw>.";
+            gameOverMsg = "**Game over!** This game ended in a **draw.**";
         } else {
-            await this.addLog(`+ Game over! The winner is: <${this.winner.username}>!`);
-            await this.channel.send(`**Game over!** The winner is: **${this.winner}!**`);
+            logToAdd = `+ Game over! The winner is: <${this.winner.username}>!`;
+            gameOverMsg = `**Game over!** The winner is: **${this.winner}!**`;
         }
-        await this.gamemsg.edit(this.getGameMessage());
+        await Promise.allSettled([
+            this.addLog(logToAdd),
+            this.channel.send(gameOverMsg),
+            this.gamemsg.edit(this.getGameMessage())
+        ]);
         this.gameEnd();
     }
 
     checkWinner() {
+        if (!(this.board.some(element => element.some(e => e === 0)))) {
+            return "draw";
+        }
+
         for (let i of this.board) {
             if (i.every(v => v !== 0 && v === i[0])) {
                 return this.players[i[0] - 1];
@@ -233,10 +243,6 @@ class TicTacToe extends Game {
                 }
                 return this.players[this.board[0][this.board.length - 1] - 1];
             }
-        }
-
-        if (!(this.board.some(element => element.some(e => e === 0)))) {
-            return "draw";
         }
 
         return null;
