@@ -78,7 +78,7 @@ class Game {
                 if (value == "true" || value == "on") return true;
                 else if (value == "false" || value == "off") return false;
                 else throw new Error("Boolean value must be `true` or `false`!");
-                
+
             case "number":
                 return Number(value);
 
@@ -261,7 +261,7 @@ class Game {
             this.channel.send(`**${sender} has aborted the game.**`);
             this.aborted = true;
             await Promise.allSettled([
-                this.addLog("The game has been aborted. <No contest>."),
+                this.addLog("- The game has been aborted. <No contest>."),
                 this.gamemsg.edit(this.getGameMessage())
             ]);
             this.gameEnd();
@@ -275,7 +275,7 @@ class Game {
             str += "\n**Amount of required votes reached! The game has been aborted.**";
             this.aborted = true;
             await Promise.allSettled([
-                this.addLog("The game has been aborted. <No contest>."),
+                this.addLog("- The game has been aborted. <No contest>."),
                 this.gamemsg.edit(this.getGameMessage())
             ]);
             this.gameEnd();
