@@ -154,10 +154,7 @@ class ConnectFour extends Game {
 
         for (const i of this.board) {
             arr.push(i.concat(Array(this.boardHeight).fill(0)).slice(0, this.boardHeight));
-            // this.bot.logger.log('debug', JSON.stringify(i.concat(Array(this.boardHeight).fill(0)).slice(0, this.boardHeight)));
         }
-
-        // this.bot.logger.log('debug', "---");
 
         return arr;
     }
