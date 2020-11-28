@@ -4,11 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). All dates follow ISO format (year-month-day).
 
 ## [Unreleased]
+
+## [0.3.0] - 2020-11-28
 ### Added
 - Variant handler in `setup` command.
 - New Tic-tac-toe variant: Dan's Variation.
-- New game: Connect Four
+- New game: Connect Four.
+- Variant for Connect Four: Five-in-a-row.
 - New utility functions in Game to simplify code: `matchName`, `setOption`.
+- New feature to set a game setup as public or private.
 
 ## [0.2.0] - 2020-11-24
 ### Added
