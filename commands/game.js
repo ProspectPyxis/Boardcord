@@ -15,6 +15,13 @@ exports.run = async (bot, message, args) => { // eslint-disable-line no-unused-v
             bot.activeGames[message.guild.id][message.channel.id].abortGame(message.author);
             return;
         }
+        if (args[0] === "docs") {
+            let gName = bot.activeGames[message.guild.id][message.channel.id].constructor.gameData.isVariant
+                ? bot.activeGames[message.guild.id][message.channel.id].constructor.name
+                : Object.getPrototypeOf(Object.getPrototypeOf(bot.activeGames[message.guild.id][message.channel.id])).constructor.name;
+            message.channel.send(`Here is this game's documentation: <prospectpyxis.github.io/Boardcord/pages/games/${gName}.html>`);
+            return;
+        }
     }
     else return message.channel.send("No active game detected in this channel!");
 };
