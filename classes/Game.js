@@ -72,12 +72,13 @@ class Game {
     static setOption(option, value, options) {
         if (!this.gameData.defaultOptions[option]) return null;
 
+        console.log(`Debug: ${typeof this.gameData.defaultOptions[option]}`);
         switch (typeof this.gameData.defaultOptions[option]) {
             case "boolean":
-                if (value == "true") return true;
-                else if (value == "false") return false;
+                if (value == "true" || value == "on") return true;
+                else if (value == "false" || value == "off") return false;
                 else throw new Error("Boolean value must be `true` or `false`!");
-
+                
             case "number":
                 return Number(value);
 
@@ -98,7 +99,7 @@ class Game {
      * @param {object} options - The options list.
      * @returns {string[][]} - The formatted string.
      */
-    static getReadableOptions(options) { }
+    static getReadableOptions(options) {}
 
     /**
      * @class

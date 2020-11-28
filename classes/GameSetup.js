@@ -139,17 +139,17 @@ class GameSetup {
                 }
 
                 try {
-                    var val = this.game.setOption(args[0].toLowerCase(), args.slice(1).join(' '));
+                    var val = this.game.setOption(args[0].toLowerCase(), args.slice(1).join(' '), this.options);
                 } catch (e) {
                     this.channel.send(e.message);
                 }
 
-                if (!val) {
+                if (val === null) {
                     this.channel.send("There was an unknown error trying to set the option.");
                     break;
                 }
 
-                this.option[args[0].toLowerCase()] = val;
+                this.options[args[0].toLowerCase()] = val;
                 this.channel.send(`Option \`${args[0]}\` has been set to: \`${val}\`.`);
                 this.setupmsg.edit(this.getSetupMessage());
                 break;
