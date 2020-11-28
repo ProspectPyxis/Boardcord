@@ -108,13 +108,13 @@ class TicTacToe extends Game {
      * @override
      */
     async gameLoop() {
-        // await this.addLog(`It is now [${this.players[this.currentPlayer].username}]'s turn.`);
+
         var timer = setTimeout(
             () => this.channel.send(`${this.players[this.currentPlayer]} Please make your move within 15 seconds or your turn will be skipped!`),
             45000
         )
 
-        if (this.timeouts === 2) this.channel.send(":warning: **Warning:** The game have timed out 2 times in a row and will automatically abort after another timeout!");
+        if (this.timeouts === 2) this.channel.send(":warning: **Warning:** The game has timed out 2 times in a row and will automatically abort after another timeout!");
 
         try {
             var collected = await this.channel.awaitMessages(response => this.checkMsgMatch(response), {

@@ -88,6 +88,7 @@ class ConnectFour extends Game {
         ];
 
         this.winner;
+        this.timeouts = 0;
     }
 
     /** @override */
@@ -163,11 +164,13 @@ class ConnectFour extends Game {
 
     /** @override */
     async gameLoop() {
-        // await this.addLog(`It is now [${this.players[this.currentPlayer].username}]'s turn.`);
+
         var timer = setTimeout(
             () => this.channel.send(`${this.players[this.currentPlayer]} Please make your move within 15 seconds or your turn will be skipped!`),
             45000
         )
+
+        if (this.timeouts === 2) this.channel.send(":warning: **Warning:** The game has timed out 2 times in a row and will automatically abort after another timeout!");
 
         try {
             var collected = await this.channel.awaitMessages(response => this.checkMsgMatch(response), {
@@ -181,6 +184,16 @@ class ConnectFour extends Game {
                 this.addLog(`[${this.players[this.currentPlayer].username}] timed out - skipping turn.`)
             ]);
             this.currentPlayer = (this.currentPlayer + 1) % this.players.length;
+            this.timeouts++;
+            if (this.timeouts >= 3) {
+                await this.channel.send("**Timeout limit reached.** Game automatically aborted.");
+                this.aborted = true;
+                await Promise.allSettled([
+                    this.gamemsg.edit(this.getGameMessage()),
+                    this.addLog("The game has timed out. <No contest>.")
+                ]);
+                return;
+            }
             await this.gamemsg.edit(this.getGameMessage());
             this.gameLoop();
             return;
@@ -210,6 +223,8 @@ class ConnectFour extends Game {
     async onMessage(collected) {
         if (collected.first().content == this.bot.getPrefix(this.guild) + "game abort")
             return "abort";
+
+        this.timeouts = 0;
 
         let isPop = this.options.popout && collected.first().content.toLowerCase().indexOf("pop ") === 0;
 
