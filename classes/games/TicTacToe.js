@@ -130,17 +130,19 @@ class TicTacToe extends Game {
             return;
         }
         clearTimeout(timer);
-        await this.onMessage(collected);
+        let result = await this.onMessage(collected);
+
+        this.bot.logger.log('debug', result);
 
         if (this.winner) this.finishGame();
-        else if (!this.aborted) this.gameLoop();
+        else if (!this.aborted && result != "abort") this.gameLoop();
     }
 
     /**
      * @override
      */
     checkMsgMatch(response) {
-        if (response.content == this.bot.getPrefix(this.guild) + "game cancel") return true;
+        if (response.content == this.bot.getPrefix(this.guild) + "game abort") return true;
         if (response.author.id != this.players[this.currentPlayer].id) return false;
 
         const inputs = response.content.length === this.markersPerTurn ? [...response.content] : response.content.split(/ +/g);
@@ -159,7 +161,7 @@ class TicTacToe extends Game {
      */
     async onMessage(collected) {
         if (collected.first().content == this.bot.getPrefix(this.guild) + "game abort")
-            return;
+            return "abort";
 
         const inputs = collected.first().content.toLowerCase().split(/ +/g);
         var positions = [];

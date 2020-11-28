@@ -36,7 +36,7 @@ class GameSetup {
         var toPlay = game.players.filter(element => element.id !== this.gm.id);
         this.players = this.players.concat(toPlay);
         if (this.turnOrder) this.turnOrder = this.players;
-        if (game.constructor.gameData.variantName) {
+        if (game.constructor.gameData.isVariant) {
             this.variant = this.bot.gameVariants[this.game.name].find(e => e.matchName(game.constructor.gameData.variantName, true));
         }
         this.options = game.options;
