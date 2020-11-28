@@ -33,9 +33,12 @@ class GameSetup {
     }
 
     setFromGame(game) {
+        this.game = game.constructor;
+        this.name = game.constructor.gameData.name;
+
         var toPlay = game.players.filter(element => element.id !== this.gm.id);
         this.players = this.players.concat(toPlay);
-        if (this.turnOrder) this.turnOrder = this.players;
+        if (game.constructor.gameData.turnOrder) this.turnOrder = this.players;
         if (game.constructor.gameData.isVariant) {
             this.variant = this.bot.gameVariants[this.game.name].find(e => e.matchName(game.constructor.gameData.variantName, true));
         }
@@ -85,6 +88,7 @@ class GameSetup {
         if (Object.keys(this.options).length !== 0 || this.options.constructor !== Object) {
             str += "\n\n**Game Options:**\n";
             const readable = this.game.getReadableOptions(this.options);
+
             for (const k of readable) {
                 str += `> ${k[0]} - *${k[1]}*\n`
             }

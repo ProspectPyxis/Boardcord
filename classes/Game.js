@@ -309,8 +309,7 @@ class Game {
         if (!this.timeout) return;
         clearTimeout(this.timeout);
         if (!this.bot[this.guild.id]) this.bot[this.guild.id] = {};
-        let game = this.constructor.gameData.variantName ? Object.getPrototypeOf(Object.getPrototypeOf(this)).constructor : this.constructor;
-        this.bot.activeGames[this.guild.id][this.channel.id] = new GameSetup(this.bot, message, game);
+        this.bot.activeGames[this.guild.id][this.channel.id] = new GameSetup(this.bot, message, Game);
         this.bot.activeGames[this.guild.id][this.channel.id].setFromGame(this);
         this.bot.activeGames[this.guild.id][this.channel.id].init();
     }
