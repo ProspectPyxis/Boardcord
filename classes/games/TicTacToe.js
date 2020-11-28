@@ -39,6 +39,7 @@ class TicTacToe extends Game {
         ];
 
         this.winner;
+        this.timeouts = 0;
     }
 
     /**
@@ -113,6 +114,8 @@ class TicTacToe extends Game {
             45000
         )
 
+        if (this.timeouts === 2) this.channel.send(":warning: **Warning:** The game have timed out 2 times in a row and will automatically abort after another timeout!");
+
         try {
             var collected = await this.channel.awaitMessages(response => this.checkMsgMatch(response), {
                 max: 1,
@@ -125,14 +128,22 @@ class TicTacToe extends Game {
                 this.addLog(`[${this.players[this.currentPlayer].username}] timed out - skipping turn.`)
             ]);
             this.currentPlayer = (this.currentPlayer + 1) % this.players.length;
+            this.timeouts++;
+            if (this.timeouts >= 3) {
+                await this.channel.send("**Timeout limit reached.** Game automatically aborted.");
+                this.aborted = true;
+                await Promise.allSettled([
+                    this.gamemsg.edit(this.getGameMessage()),
+                    this.addLog("The game has timed out. <No contest>.")
+                ]);
+                return;
+            }
             await this.gamemsg.edit(this.getGameMessage());
             this.gameLoop();
             return;
         }
         clearTimeout(timer);
         let result = await this.onMessage(collected);
-
-        this.bot.logger.log('debug', result);
 
         if (this.winner) this.finishGame();
         else if (!this.aborted && result != "abort") this.gameLoop();
@@ -162,6 +173,8 @@ class TicTacToe extends Game {
     async onMessage(collected) {
         if (collected.first().content == this.bot.getPrefix(this.guild) + "game abort")
             return "abort";
+
+        this.timeouts = 0;
 
         const inputs = collected.first().content.toLowerCase().split(/ +/g);
         var positions = [];
