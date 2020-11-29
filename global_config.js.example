@@ -6,7 +6,7 @@ var config = {
     "ownerID": "insert id here",
 
     // This is the prefix the bot will use by default, if no server-specific prefix is set
-    "prefix": "bc!",
+    "prefix": "gm!",
 
     // This is the limit on how many games can be run in each server at once
     // Keep this low in order to save on memory usage

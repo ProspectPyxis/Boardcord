@@ -1,4 +1,4 @@
-# Boardcord
+# GeMatrix
 
 A bot for playing quick minigames with other server members, right in Discord itself!<br>
 *This bot is currently in early alpha - code is very much subject to breakage and refactoring. You have been warned!*
@@ -33,7 +33,7 @@ Once you have done so, follow these instructions:
 
 1. Open the terminal, CD into a folder of your choice, then clone the repository by running the following (this command specifically is recommended as to not clone the `gh-pages` branch unnecessarily):
 ```
-$ git clone --single-branch -b master https://github.com/ProspectPyxis/Boardcord.git .
+$ git clone --single-branch -b master https://github.com/ProspectPyxis/GeMatrix.git .
 ```
 2. In a terminal, open the folder, and run `npm init`.
 3. Once you have done so, install the required dependencies (see above).

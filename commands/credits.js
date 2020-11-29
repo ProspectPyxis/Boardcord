@@ -1,5 +1,5 @@
 exports.run = async (bot, message, args) => { // eslint-disable-line no-unused-vars
-    message.channel.send("Bot credits are now hosted here: https://prospectpyxis.github.io/Boardcord/pages/misc/credits.html");
+    message.channel.send("Bot credits are now hosted here: https://prospectpyxis.github.io/GeMatrix/pages/misc/credits.html");
 };
 
 exports.conf = {

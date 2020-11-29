@@ -1,6 +1,6 @@
 {
-  "name": "Boardcord",
-  "version": "0.2.0",
+  "name": "GeMatrix",
+  "version": "0.3.0",
   "description": "A bot for playing various games with your friends right in Discord, for free!",
   "main": "index.js",
   "scripts": {
@@ -8,15 +8,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ProspectPyxis/Boardcord.git"
+    "url": "git+https://github.com/ProspectPyxis/GeMatrix.git"
   },
   "keywords": [],
   "author": "",
   "license": "GPL-3.0",
   "bugs": {
-    "url": "https://github.com/ProspectPyxis/Boardcord/issues"
+    "url": "https://github.com/ProspectPyxis/GeMatrix/issues"
   },
-  "homepage": "https://github.com/ProspectPyxis/Boardcord#readme",
+  "homepage": "https://github.com/ProspectPyxis/GeMatrix#readme",
   "dependencies": {
     "2d-array-rotation": "^2.1.1",
     "better-sqlite-pool": "^0.3.0",

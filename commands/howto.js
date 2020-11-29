@@ -1,5 +1,5 @@
 exports.run = async (bot, message, args) => { // eslint-disable-line no-unused-vars
-    message.channel.send("Here's a link to getting started with Boardcord: <https://prospectpyxis.github.io/Boardcord/pages/guide.html>");
+    message.channel.send("Here's a link to getting started with GeMatrix: <https://prospectpyxis.github.io/GeMatrix/pages/guide.html>");
 };
 
 exports.conf = {

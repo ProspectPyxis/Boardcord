@@ -96,7 +96,7 @@ class GameSetup {
             for (const k of readable) {
                 str += `> ${k[0]} - *${k[1]}*\n`
             }
-            str += `\n(You may see details on each game option at <https://prospectpyxis.github.io/Boardcord/pages/games/${this.game.name}.html>)\n`;
+            str += `\n(You may see details on each game option at <https://prospectpyxis.github.io/GeMatrix/pages/games/${this.game.name}.html>)\n`;
         } else {
             str += "\n\nThis game has no options available.\n"
         }
