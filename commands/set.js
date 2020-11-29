@@ -6,29 +6,34 @@ exports.run = async (bot, message, args) => { // eslint-disable-line no-unused-v
 
     // Special handling for certain values go here
     if (prop === 'channelWhitelist') {
-        let cmd = value.shift();
+        const cmd = value.shift();
 
         if (message.mentions.channels.size() === 0) {
             return message.channel.send("You must mention at least one channel!");
         }
 
+        let str = '';
+
         if (cmd === "add") {
             for (const channel of message.mentions.channels.values()) {
                 bot.guildsettings.push(message.guild.id, channel.id, prop);
             }
-            message.channel.send("The mentioned channels have been added to the whitelist.");
-            return;
+            str += "The mentioned channels have been added to the whitelist.";
         }
-
-        if (cmd === "remove") {
+        else if (cmd === "remove") {
             for (const channel of message.mentions.channels.values()) {
                 bot.guildsettings.remove(message.guild.id, channel.id, prop);
             }
-            message.channel.send("The mentioned channels have been removed from the whitelist.");
-            return;
+            str += "The mentioned channels have been removed from the whitelist.";
         }
+        else return message.channel.send("You must either `add` or `remove` from this setting!");
 
-        return message.channel.send("You must either `add` or `remove` from this setting!");
+        if (bot.guildsettings.get(message.guild.id, prop).length === 0) {
+            str += "\nThe whitelist is now empty - any channel may be used to play games.";
+        } else {
+            str += `\nThe whitelist now has the following channels: <#${bot.guildsettings.get(message.guild.id, prop).join('>, <#')}>`
+        }
+        return message.channel.send(str);
     }
 
     const vartype = typeof bot.guildsettings.get(message.guild.id, prop);
