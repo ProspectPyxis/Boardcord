@@ -4,5 +4,9 @@ module.exports = async (bot, guild) => {
     str += "To get started, please see the \"Getting Started\" page of the documentation here: <https://prospectpyxis.github.io/Boardcord/pages/guide.html>\n\n";
     str += "I hope you enjoy the games we have!";
 
-    guild.systemChannel.send(str);
+    try {
+        guild.systemChannel.send(str);
+    } catch (e) {
+        bot.logger.log('warn', `Error trying to send server join message: ${e}`);
+    }
 }
