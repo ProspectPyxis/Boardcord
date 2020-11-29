@@ -33,6 +33,10 @@ exports.run = async (bot, message, args) => { // eslint-disable-line no-unused-v
         if (bot.activeGames[message.guild.id] && Object.keys(bot.activeGames[message.guild.id]).length >= bot.config.gamesPerSever)
             return message.channel.send(`The game limit per guild has been hit. Please wait for an existing game to end before trying again. (limit: ${bot.config.gamesPerSever})`);
 
+        if (bot.guildsettings.get(message.guild.id, "channelWhitelist").length > 0 && bot.guildsettings.get(message.guild.id, "whitelist").some(e => message.guild.id == e)) {
+            return message.channel.send("This channel has not been whitelisted to play games in - please try a different channel!");
+        }
+
         // Check if using variant shortcut
         if (args.indexOf("/") !== -1) {
             var variant = args.slice(args.indexOf("/") + 1, args.length);

@@ -39,7 +39,8 @@ bot.guildsettings = new Enmap({
 
 bot.defaultsettings = {
     prefix: bot.config.prefix,
-    allowRedo: true
+    allowRedo: true,
+    channelWhitelist: []
 };
 
 // Setup logger
