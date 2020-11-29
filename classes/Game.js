@@ -250,6 +250,7 @@ class Game {
      */
     finishGame() {}
 
+    // OPTIMIZE: There HAS to be a more elegant way to do this that also kills gameLoop in the same method
     async abortGame(sender) {
         const limit = this.players.length === 2 ? 2 : Math.ceil(this.players.length / 2);
 

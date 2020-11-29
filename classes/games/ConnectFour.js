@@ -117,7 +117,7 @@ class ConnectFour extends Game {
             }
         } else {
             str += "\n**The game is over!**"
-            if (this.winner === "draw") str += "\nThe game ended in a **draw.**";
+            if (this.winner === "draw" || this.winner === "bothwin") str += "\nThe game ended in a **draw.**";
             else str += `\nThe winner is: **${this.winner}!**`
         }
 
@@ -235,7 +235,7 @@ class ConnectFour extends Game {
             err.delete({ timeout: 3000 });
             return;
         }
-        if (isPop && this.board[col][0] !== this.currentPlayer) {
+        if (isPop && this.board[col][0] - 1 !== this.currentPlayer) {
             let err = await this.channel.send("The piece at the bottom of that column is not yours!");
             err.delete({ timeout: 3000 });
             return;
@@ -266,7 +266,7 @@ class ConnectFour extends Game {
             gameOverMsg = "**Game over!** This game ended in a **draw.**";
         } else if (this.winner === "bothwin") {
             logToAdd = `+ Both players have ${numberWords.convert(this.kVal)}-in-a-row! The game ended in a <draw>.`;
-            gameOverMsg = `**Both players have ${numberWords.convert(this.kVal)}-in-a-row - game over!** The game ended in a <draw>.`;
+            gameOverMsg = `**Both players have ${numberWords.convert(this.kVal)}-in-a-row - game over!** The game ended in a **draw**.`;
         } else {
             logToAdd = `+ Game over! The winner is: <${this.winner.username}>!`;
             gameOverMsg = `**Game over!** The winner is: **${this.winner}!**`;
@@ -310,12 +310,11 @@ class ConnectFour extends Game {
                         this.winPos = tempWinPos;
                         tempWinner = this.winPos[0][0];
                     }
-                    else if (this.winPos[0][0] == tempWinner) {
-                        this.winPos = this.bot.utils.union2DArrays(this.winPos, tempWinPos);
-                    }
                     else {
-                        this.winPos = [];
-                        return "bothwin";
+                        if (tempWinner !== -1 && tempWinPos[0][0] != tempWinner) {
+                            tempWinner = -1;
+                        }
+                        this.winPos = this.bot.utils.union2DArrays(this.winPos, tempWinPos);
                     }
                 }
             }
@@ -337,12 +336,11 @@ class ConnectFour extends Game {
                         this.winPos = tempWinPos;
                         tempWinner = this.winPos[0][0];
                     }
-                    else if (this.winPos[0][0] == tempWinner) {
-                        this.winPos = this.bot.utils.union2DArrays(this.winPos, tempWinPos);
-                    }
                     else {
-                        this.winPos = [];
-                        return "bothwin";
+                        if (tempWinner !== -1 && tempWinPos[0][0] != tempWinner) {
+                            tempWinner = -1;
+                        }
+                        this.winPos = this.bot.utils.union2DArrays(this.winPos, tempWinPos);
                     }
                 }
             }
@@ -387,12 +385,11 @@ class ConnectFour extends Game {
                         this.winPos = tempWinPos;
                         tempWinner = this.winPos[0][0];
                     }
-                    else if (this.winPos[0][0] == tempWinner) {
-                        this.winPos = this.bot.utils.union2DArrays(this.winPos, tempWinPos);
-                    }
                     else {
-                        this.winPos = [];
-                        return "bothwin";
+                        if (tempWinner !== -1 && tempWinPos[0][0] != tempWinner) {
+                            tempWinner = -1;
+                        }
+                        this.winPos = this.bot.utils.union2DArrays(this.winPos, tempWinPos);
                     }
                 }
             }
@@ -415,18 +412,17 @@ class ConnectFour extends Game {
                         this.winPos = tempWinPos;
                         tempWinner = tempWinPos[0][0];
                     }
-                    else if (this.winPos[0][0] == tempWinner) {
-                        this.winPos = this.bot.utils.union2DArrays(this.winPos, tempWinPos);
-                    }
                     else {
-                        this.winPos = [];
-                        return "bothwin";
+                        if (tempWinner !== -1 && tempWinPos[0][0] != tempWinner) {
+                            tempWinner = -1;
+                        }
+                        this.winPos = this.bot.utils.union2DArrays(this.winPos, tempWinPos);
                     }
                 }
             }
         }
 
-        return tempWinner > 0 ? this.players[tempWinner - 1] : null;
+        return tempWinner > 0 ? this.players[tempWinner - 1] : tempWinner === -1 ? "bothwin" : null;
     }
 
 }
