@@ -1,3 +1,5 @@
+const numberWords = require('number-words');
+
 module.exports = (bot) => {
 
     bot.loadCommand = (commandName) => {
@@ -34,6 +36,16 @@ module.exports = (bot) => {
     // Util functions
 
     bot.utils = {};
+
+    bot.utils.sanitizeString = (str) => {
+        str = str.replace(/[/\-,.'""()[\]\\ ]+/g, '');
+        str = str.replace(/[0-9]+/g, (match, offset, string) => { // eslint-disable-line no-unused-vars
+            return numberWords.convert(parseInt(match)).replace(/ +/g, '');
+        });
+        str = str.toLowerCase();
+
+        return str;
+    }
 
     bot.utils.wait = async (ms) => {
         return new Promise(resolve => {

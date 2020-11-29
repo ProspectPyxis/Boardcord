@@ -44,7 +44,7 @@ exports.run = async (bot, message, args) => { // eslint-disable-line no-unused-v
         }
 
         // Check if game exists
-        let gameIndex = bot.games.findIndex(element => element.matchName(args.join(' '), false))
+        let gameIndex = bot.games.findIndex(element => element.matchName(bot, args.join(' '), false))
         if (gameIndex === -1)
             return message.channel.send("The game you input could not be found!");
 

@@ -42,7 +42,7 @@ class GameSetup {
         this.players = this.players.concat(toPlay);
         if (game.constructor.gameData.turnOrder) this.turnOrder = this.players;
         if (game.constructor.gameData.isVariant) {
-            this.variant = this.bot.gameVariants[this.game.name].find(e => e.matchName(game.constructor.gameData.variantName, true));
+            this.variant = this.bot.gameVariants[this.game.name].find(e => e.matchName(this.bot, game.constructor.gameData.variantName, true));
         }
         this.options = game.options;
     }
@@ -50,7 +50,7 @@ class GameSetup {
     setVariant(variant) {
         if (this.bot.gameVariants[this.game.name].length === 0) return;
 
-        var vIndex = this.bot.gameVariants[this.game.name].findIndex(element => element.matchName(variant, true));
+        var vIndex = this.bot.gameVariants[this.game.name].findIndex(element => element.matchName(this.bot, variant, true));
 
         if (vIndex !== -1)
         this.variant = this.bot.gameVariants[this.game.name][vIndex];
@@ -234,10 +234,10 @@ class GameSetup {
                 // This being null indicates resetting to default variant
                 var variantTo = null;
 
-                var variantIndex = this.bot.gameVariants[this.game.name].findIndex(element => element.matchName(vName, true))
+                var variantIndex = this.bot.gameVariants[this.game.name].findIndex(element => element.matchName(this.bot, vName, true))
 
                 if (vName) {
-                    if (!this.game.matchName(vName, false) && variantIndex === -1) {
+                    if (!this.game.matchName(this.bot, vName, false) && variantIndex === -1) {
                         this.channel.send("The variant you input could not be found!");
                         break;
                     }

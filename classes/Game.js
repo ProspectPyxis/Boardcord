@@ -33,29 +33,21 @@ class Game {
      * Returns whether a string matches this game's name or its variant name, or any aliases.
      *
      * @static
+     * @param {Discord.Client} bot - The bot instance. This is simply to access the util command needed.
      * @param {string} n - The string to compare.
      * @param {boolean} byVariant - Whether to compare the string to the normal name/aliases or its variant name/aliases.
      * @returns {boolean} - Whether the string matches.
      */
-    static matchName(n, byVariant) {
-        let cleanString = str => {
-            str = str.replace(/[/\-,.'""()[\]\\ ]+/g, '');
-            str = str.replace(/[0-9]+/g, (match, offset, string) => {
-                return numberWords.convert(parseInt(match)).replace(/ +/g, '');
-            });
-            str = str.toLowerCase();
+    static matchName(bot, n, byVariant) {
 
-            return str;
-        }
-
-        n = cleanString(n);
+        n = bot.sanitizeString(n);
 
         if (!byVariant)
-            return cleanString(this.gameData.name) == n ||
-                this.gameData.aliases.some(e => cleanString(e) == n);
+            return bot.sanitizeString(this.gameData.name) == n ||
+                this.gameData.aliases.some(e => bot.sanitizeString(e) == n);
         else
-            return cleanString(this.gameData.variantName) == n ||
-                this.gameData.variantAliases.some(e => cleanString(e) == n);
+            return bot.sanitizeString(this.gameData.variantName) == n ||
+                this.gameData.variantAliases.some(e => bot.sanitizeString(e) == n);
     }
 
     /**
