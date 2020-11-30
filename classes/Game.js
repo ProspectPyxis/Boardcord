@@ -40,14 +40,14 @@ class Game {
      */
     static matchName(bot, n, byVariant) {
 
-        n = bot.sanitizeString(n);
+        n = bot.utils.sanitizeString(n);
 
         if (!byVariant)
-            return bot.sanitizeString(this.gameData.name) == n ||
-                this.gameData.aliases.some(e => bot.sanitizeString(e) == n);
+            return bot.utils.sanitizeString(this.gameData.name) == n ||
+                this.gameData.aliases.some(e => bot.utils.sanitizeString(e) == n);
         else
-            return bot.sanitizeString(this.gameData.variantName) == n ||
-                this.gameData.variantAliases.some(e => bot.sanitizeString(e) == n);
+            return bot.utils.sanitizeString(this.gameData.variantName) == n ||
+                this.gameData.variantAliases.some(e => bot.utils.sanitizeString(e) == n);
     }
 
     /**
