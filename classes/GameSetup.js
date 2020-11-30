@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 const { nanoid } = require('nanoid');
 const shuffle = require('knuth-shuffle').knuthShuffle;
+const utils = require('../common/utils.js');
 
 class GameSetup {
 
@@ -247,7 +248,7 @@ class GameSetup {
                 // This looks a bit weird but basically this compares the keys of the setup's options to the keys of the variant's options
                 // This is true if the two keys match, otherwise this is false
                 // This is basically to check if the options need to be reset when setting to a variant
-                var compareOptions = this.bot.utils.objectsHaveSameKeys(this.options, variantTo ? variantTo.gameData.defaultOptions : this.game.gameData.defaultOptions);
+                var compareOptions = this.utils.objectsHaveSameKeys(this.options, variantTo ? variantTo.gameData.defaultOptions : this.game.gameData.defaultOptions);
 
                 if (!compareOptions) {
                     // Just skip all the checks if options are already empty anyways

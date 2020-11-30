@@ -1,5 +1,6 @@
 const Game = require('../Game.js');
 
+const utils = require('../common/utils.js');
 const { rotate270, rotate90 } = require('2d-array-rotation');
 const numberWords = require('number-words');
 
@@ -314,7 +315,7 @@ class ConnectFour extends Game {
                         if (tempWinner !== -1 && tempWinPos[0][0] != tempWinner) {
                             tempWinner = -1;
                         }
-                        this.winPos = this.bot.utils.union2DArrays(this.winPos, tempWinPos);
+                        this.winPos = utils.union2DArrays(this.winPos, tempWinPos);
                     }
                 }
             }
@@ -340,7 +341,7 @@ class ConnectFour extends Game {
                         if (tempWinner !== -1 && tempWinPos[0][0] != tempWinner) {
                             tempWinner = -1;
                         }
-                        this.winPos = this.bot.utils.union2DArrays(this.winPos, tempWinPos);
+                        this.winPos = utils.union2DArrays(this.winPos, tempWinPos);
                     }
                 }
             }
@@ -389,7 +390,7 @@ class ConnectFour extends Game {
                         if (tempWinner !== -1 && tempWinPos[0][0] != tempWinner) {
                             tempWinner = -1;
                         }
-                        this.winPos = this.bot.utils.union2DArrays(this.winPos, tempWinPos);
+                        this.winPos = utils.union2DArrays(this.winPos, tempWinPos);
                     }
                 }
             }
@@ -416,7 +417,7 @@ class ConnectFour extends Game {
                         if (tempWinner !== -1 && tempWinPos[0][0] != tempWinner) {
                             tempWinner = -1;
                         }
-                        this.winPos = this.bot.utils.union2DArrays(this.winPos, tempWinPos);
+                        this.winPos = utils.union2DArrays(this.winPos, tempWinPos);
                     }
                 }
             }

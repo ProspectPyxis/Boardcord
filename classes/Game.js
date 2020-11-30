@@ -2,6 +2,7 @@
 const { nanoid } = require('nanoid');
 const GameSetup = require('./GameSetup.js');
 const numberWords = require('number-words');
+const utils = require('../common/utils.js');
 
 class Game {
 
@@ -33,21 +34,20 @@ class Game {
      * Returns whether a string matches this game's name or its variant name, or any aliases.
      *
      * @static
-     * @param {Discord.Client} bot - The bot instance. This is simply to access the util command needed.
      * @param {string} n - The string to compare.
      * @param {boolean} byVariant - Whether to compare the string to the normal name/aliases or its variant name/aliases.
      * @returns {boolean} - Whether the string matches.
      */
-    static matchName(bot, n, byVariant) {
+    static matchName(n, byVariant) {
 
-        n = bot.utils.sanitizeString(n);
+        n = utils.sanitizeString(n);
 
         if (!byVariant)
-            return bot.utils.sanitizeString(this.gameData.name) == n ||
-                this.gameData.aliases.some(e => bot.utils.sanitizeString(e) == n);
+            return utils.sanitizeString(this.gameData.name) == n ||
+                this.gameData.aliases.some(e => utils.sanitizeString(e) == n);
         else
-            return bot.utils.sanitizeString(this.gameData.variantName) == n ||
-                this.gameData.variantAliases.some(e => bot.utils.sanitizeString(e) == n);
+            return utils.sanitizeString(this.gameData.variantName) == n ||
+                this.gameData.variantAliases.some(e => utils.sanitizeString(e) == n);
     }
 
     /**
@@ -134,11 +134,11 @@ class Game {
      */
     async init() {
         var countdown = await this.channel.send(":warning: The game begins in **3**...");
-        await this.bot.utils.wait(1000);
+        await utils.wait(1000);
         countdown.edit(":warning: The game begins in **2**...");
-        await this.bot.utils.wait(1000);
+        await utils.wait(1000);
         countdown.edit(":warning: The game begins in **1**...");
-        await this.bot.utils.wait(1000);
+        await utils.wait(1000);
         countdown.delete();
         this.gamemsg = await this.channel.send(this.getGameMessage());
         this.logmsg = await this.channel.send(this.getLog());
