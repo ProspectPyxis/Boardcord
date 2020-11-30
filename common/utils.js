@@ -74,5 +74,9 @@ module.exports = {
         }
 
         return arr;
+    },
+
+    getDigitCount: (x) => {
+        return (Math.log10((x ^ (x >> 31)) - (x >> 31)) | 0) + 1;
     }
 }
