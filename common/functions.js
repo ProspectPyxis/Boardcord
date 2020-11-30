@@ -53,6 +53,33 @@ module.exports = (bot) => {
         });
     }
 
+    bot.utils.numberToEmoji = (num, padSize) => {
+        if (typeof num === "number") num = num.toString();
+        if (padSize && padSize > num.length) num = num.padStart(padSize, '0');
+
+        const numConversion = {
+            "0": ":zero:",
+            "1": ":one:",
+            "2": ":two:",
+            "3": ":three:",
+            "4": ":four:",
+            "5": ":five:",
+            "6": ":six:",
+            "7": ":seven:",
+            "8": ":eight:",
+            "9": ":nine:"
+        }
+
+        let str = '';
+
+        for (let i = 0; i < num.length; i++) {
+            if (numConversion[num[i]]) str += numConversion[num[i]];
+            else throw new SyntaxError("String contains invalid characters!");
+        }
+
+        return str;
+    }
+
     bot.utils.objectsHaveSameKeys = (...objects) => {
         const allKeys = objects.reduce((keys, object) => keys.concat(Object.keys(object)), []);
         const union = new Set(allKeys);
