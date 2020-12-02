@@ -26,7 +26,7 @@ module.exports = {
 
         for (let i = 0; i < num.length; i++) {
             if (numConversion[num[i]]) str += numConversion[num[i]];
-            else throw new SyntaxError("String contains invalid characters!");
+            else str += num[i];
         }
 
         return str;
