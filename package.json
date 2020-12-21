@@ -20,20 +20,20 @@
   "dependencies": {
     "2d-array-rotation": "^2.1.1",
     "better-sqlite-pool": "^0.3.0",
-    "better-sqlite3": "^7.1.1",
+    "better-sqlite3": "^7.1.2",
     "chance": "^1.1.7",
     "discord.js": "^12.5.1",
     "enmap": "^5.8.2",
     "knuth-shuffle": "^1.0.8",
     "logform": "^2.2.0",
-    "nanoid": "^3.1.18",
+    "nanoid": "^3.1.20",
     "node-gyp": "^7.1.2",
     "number-words": "^1.1.1",
     "winston": "^3.3.3"
   },
   "devDependencies": {
     "babel-eslint": "^10.1.0",
-    "eslint": "^7.14.0",
-    "eslint-plugin-jsdoc": "^30.7.8"
+    "eslint": "^7.16.0",
+    "eslint-plugin-jsdoc": "^30.7.9"
   }
 }
