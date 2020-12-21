@@ -78,5 +78,24 @@ module.exports = {
 
     getDigitCount: (x) => {
         return (Math.log10((x ^ (x >> 31)) - (x >> 31)) | 0) + 1;
+    },
+
+    isSequential: (arr, len) => {
+        if (arr.length > len) 
+            return false
+        if (arr.length < 2)
+            return true
+
+        let sequenceLen = 0
+
+        for (let i = 1; i < arr.length; i++) {
+            sequenceLen = arr[i] - 1 === arr[i - 1]
+                ? sequenceLen + 1 
+                : 0
+            
+            if (sequenceLen === len) return true
+        }
+
+        return false
     }
 }
