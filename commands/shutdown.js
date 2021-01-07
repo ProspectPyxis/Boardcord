@@ -1,7 +1,7 @@
 exports.run = async (bot, message, args) => { // eslint-disable-line no-unused-vars
     message.channel.send("The bot will now shut down in 5 seconds.");
     setTimeout(() => {
-        bot.logger.log('info', "END: Terminating Boardcord with exit code 0.");
+        bot.logger.log('info', "END: Terminating GeMatrix with exit code 0.");
         process.exit();
     }, 5000);
 };
