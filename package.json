@@ -33,7 +33,7 @@
   },
   "devDependencies": {
     "babel-eslint": "^10.1.0",
-    "eslint": "^7.16.0",
-    "eslint-plugin-jsdoc": "^30.7.9"
+    "eslint": "^7.17.0",
+    "eslint-plugin-jsdoc": "^30.7.13"
   }
 }
