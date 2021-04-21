@@ -122,7 +122,7 @@ dist
 .eslintrc.js
 gh-pages/
 
-global_config.js
+global_config.ts
 data/
 
 commands/testcommand.js
